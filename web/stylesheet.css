@@ -1,0 +1,222 @@
+/* processingLibs style by andreas schlegel, sojamo. */
+
+
+body, div, h1, h2, h3, h4, h5, h6, p, a, ul, li, strong {
+	margin:0;
+	padding:0;
+	border:0;
+}
+
+
+body {
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; 
+	font-size : 100%; 
+    font-size : 0.7em;
+	font-weight : normal;
+	line-height	: normal;
+}
+
+
+div {
+	margin-bottom:40px;
+}
+
+
+#container {
+	background-color:#fff;
+	width:750px;
+}
+
+#header, 
+#menu, 
+#about,
+#download,
+#examples,
+#demos,
+#misc {
+	padding-left:60px;
+}
+
+
+#header {
+	float:left;
+	padding-top:20px;
+	width:690px;
+	margin-bottom:0px;
+}
+
+#menu {
+	padding-top:6px;
+	float:left;
+	margin-bottom:40px;
+	height:20px;
+	width:690px;
+}
+
+
+#about,
+#download,
+#examples,
+#demos,
+#misc {
+	width:400px;
+	float:left;
+}
+
+
+#resources, #info {
+	width:200px;
+	margin-right: 20px;
+	float:right;
+}
+
+
+.clear {
+	clear:both;
+}
+
+#footer {
+	margin-top:300px;
+	height:20px;
+	padding-left:60px;
+	padding-top:6px;
+}
+
+
+ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+
+
+#menu li {
+	float:left;
+	padding-right:6px; 
+}
+
+
+
+
+
+
+/* Headings */
+
+h1 {
+	font-size:1.5em;
+}
+
+
+h2, h3, h4, h5, th {
+	font-size:1.0em;
+}
+
+
+
+p { 
+	font-size:1em;
+	width:90%;
+	margin-bottom:20px;
+}
+
+
+pre, code {  
+	font-family:"Courier New", Courier, monospace; 
+	font-size:1em; 
+	line-height:normal;
+}
+
+
+strong {
+	font-weight:normal;
+}
+
+
+
+hr {
+	border:0;
+	height:1px;
+	margin-bottom:24px;
+}
+
+
+a {
+	text-decoration: underline;
+	font-weight: normal;
+}
+
+
+a:hover, 
+a:active {
+	text-decoration: underline;
+	font-weight: normal;
+}
+
+
+a:visited,
+a:link:visited {
+	text-decoration: underline;
+	font-weight: normal;
+}
+
+
+
+img {
+	border: 0px solid #000000;
+}
+
+
+
+
+
+/* COLORS */
+
+
+body {
+	color : #333333;
+	background-color :#E2E2CC;
+}
+
+#header {
+	background-color:#000;
+	color:#fff;
+}
+
+
+
+h1, h2, h3, h4, h5, h6 {
+	color:#5A5A46;
+}
+
+
+pre, code {  
+	color: #000000;
+}
+
+
+a,strong {
+	color: #3399CC;
+}
+
+
+a:hover, 
+a:active {
+	color: #3399CC;
+}
+
+
+a:visited,
+a:link:visited {
+	color: #3399CC;
+}
+
+
+#footer, #menu {
+	background-color:#5A5A4E;
+	color:#fff;
+}
+
+
+#footer a, #menu a {
+	color:#fff;
+}

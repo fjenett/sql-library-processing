@@ -1,0 +1,22 @@
+# Mac fun
+.DS_Store
+
+# ant-javac build directory
+bin/
+
+# hide some results
+documentation/*
+distribution/*
+
+# XCode
+build/
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+
+# old stuff i can't seem to be able to delete
+hidden/
+releases/

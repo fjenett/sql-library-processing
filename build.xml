@@ -1,0 +1,270 @@
+<project name="SQLibrary" default="build" basedir="./">
+    
+	<description>
+		SQLibrary build file, based on Processing
+		libraries build file.
+	</description>
+	
+	<target name="settings">
+
+<!-- #### (1) who is the author of this library?  edit value.  #### -->
+	<property name="author" value="Florian Jenett"/>
+	
+<!-- #### (2) which copyright?  edit value.  #### -->
+	<property name="copyright" value="(c) 2005 - 2009"/>
+
+<!-- #### (3) give your library a name. edit value.  #### -->
+	<property name="libraryName"  value="SQLibrary"/>
+	
+<!-- #### (4) give your library a name. edit value.   #### -->
+	<property name="versionNumber"  value="0.1.0"/>
+	
+<!-- #### (5) your contact url. edit value. #### -->
+	<property name="yourLink"  value="http://bezier.de/" />
+	
+	<property name="keywords" value="MySQL, SQLite, PostgreSQL, SQL, database"/>
+
+<!-- #### (5) where are your processing libraries located? edit location. #### -->
+	<property name="processing" location="/Users/fjenett/Documents/Processing/libraries"/>
+
+<!-- #### (6) set the java version that should be used to compile your library. #### -->	
+	<property name="javaVersion" value="1.5"/>
+
+<!-- #### (7) where are the jar files located that are required for compiling 
+		your library such as e.g. core.jar ? edit location. 
+#### -->
+	<property name="libraryClasspath"  location="/Applications/Processing.app/Contents/Resources/Java/"/>
+	
+	<path id="library-classes-add">
+		<fileset dir="lib">
+			<include name="mysql-connector-java-3.1.14-bin.jar"/> <!-- MySQL -->
+			<include name="sqlitejdbc-v053-pure.jar"/> <!-- SQLite -->
+			<include name="postgresql-8.3-604.jdbc3.jar"/> <!-- PostgreSQL -->
+		</fileset>
+	</path>
+	<path id="library-classpath">
+		<fileset dir="${libraryClasspath}" >		
+<!-- #### (8) add the jar files that are required for compiling. edit name.
+		for more include files. duplicate <include name="" />
+#### -->
+			<include name="core.jar"/>
+		</fileset>
+		<path refid="library-classes-add" />
+	</path>
+	
+	<!-- no changes or adjustments required below -->
+	
+	<property name="jarFile" value="${libraryName}.jar"/>
+	<property name="src" location="src"/>
+	<property name="bin" location="bin"/>
+	<property name="javadoc" location="documentation"/>
+	<property name="dist" location="distribution"/>
+	<property name="build" location="build"/>
+
+	</target>
+	
+	<target name="init" depends="settings">
+	
+<echo>Properties initialized.
+src path		${src}
+bin path 		${bin}
+libraryClasspath	${libraryClasspath}
+processing Libraries	${processing}
+java version		${javaVersion}
+</echo>
+	
+	<buildnumber file="lib/build.number"/>
+	<tstamp> <!-- Create the time stamp -->
+		<format property="date" pattern="MM/dd/yyyy" offset="0" unit="hour"/>
+	</tstamp>
+	<echo>Start to build the library ... this is vers. ${versionNumber}, build #${build.number} on ${date}</echo>
+	
+<!--
+	add ant-contrib package, needed for <foreach>
+-->
+<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+  <classpath>
+    <pathelement location="lib/ant-contrib-1.0b3.jar"/>
+  </classpath>
+</taskdef>
+	<mkdir dir="${dist}"/>
+  </target>
+  
+  <!--echo>${toString:library-classpath}</echo-->
+  
+	<!-- compile the library -->
+  <target name="compile" depends="init" description="compile the source" >  	
+		<mkdir dir="${bin}"/>
+		<javac srcdir="${src}" destdir="${bin}" source="${javaVersion}">
+			<classpath>
+				<path refid="library-classpath"/>
+			</classpath>
+		</javac>
+  </target>
+
+	<!-- build the distribution of the library -->
+  <target name="build" depends="compile" description="generate the distribution" >
+  	<!-- delete the previous content of the ${dist} folder -->
+  	<delete dir="${dist}" />
+  	
+  	<!-- build the structure for ${dist} -->
+  	<mkdir dir="${dist}" />
+  	<mkdir dir="${dist}/library" />
+  	<mkdir dir="${dist}/examples" />
+  	<mkdir dir="${dist}/documentation" />
+  	<mkdir dir="${dist}/source" />
+  	<jar jarfile="${dist}/library/${jarFile}" basedir="${bin}"/>
+  	<copy todir="${dist}/examples">
+  		<fileset dir="examples"/>
+  	</copy> 
+	<copy todir="${dist}/source">
+		<fileset dir="${src}" />
+	</copy>
+	<copy todir="${dist}/library">
+  		<path refid="library-classes-add" />
+  	</copy> 
+  	
+	<!-- create the java documentation of the library -->
+ 	<mkdir dir="${javadoc}" />
+ 	<javadoc bottom="processing library ${libraryName} by ${author}. ${copyright}"
+			 destdir="${javadoc}" 
+			 verbose="false" 
+			 stylesheetfile="resources/stylesheet.css" 
+			 doctitle="Javadocs: ${libraryName}" 
+			 public="true" version="false" 
+			 windowtitle="Javadocs: ${libraryName}">
+ 		<fileset dir="${src}" defaultexcludes="yes">
+			<include name="**/*"/>
+		</fileset>
+		<classpath>
+				<path refid="library-classpath"/>
+			</classpath>
+ 	</javadoc>
+	
+	<copy todir="${dist}/documentation">
+		<fileset dir="${javadoc}" />
+	</copy>
+  	
+	<!-- copy the jar file to processing's libraries -->
+	<mkdir dir="${processing}/${libraryName}" />
+	<copy todir="${processing}/${libraryName}">
+		<fileset dir="${dist}"/>
+	</copy> 
+
+  	<!-- zip the distribution of the library -->
+  	<zip destfile="${dist}/${libraryName}-${versionNumber}.zip"
+  	       basedir="${dist}"
+  	       excludes="**/_DS.Store"
+	/>
+  	
+  	<!-- <rename src="${dist}/${libraryName}.zip" dest="${dist}/${libraryName}_${versionNumber}.zip" /> -->
+ 	
+  	<!-- organize the ${dist} folder -->
+  	<mkdir dir="${dist}/web" />
+  	<move todir="${dist}/web/documentation">
+  		<fileset dir="${dist}/documentation" />
+  	</move>
+  	
+  	<move todir="${dist}/web/examples">
+  		<fileset dir="${dist}/examples" />
+  	</move>
+  	
+  	<delete dir="${dist}/library" />
+  	
+  	<copy todir="${dist}/web">
+  		<fileset dir="web" />
+  	</copy>
+  	
+  	<!--
+  	format the index.html file. 
+  	regular expressions are used to parse the web index.html file. 
+  	key words starting and ending with ## are replaced by values 
+  	defined earlier in the beginning of this build file.
+  	-->
+  	
+  	<replaceregexp file="${dist}/web/index.html"
+  	                         match="##yourLibrary##"
+  	                         replace="${libraryName}"
+  	                         flags="g" />
+  	
+  	<replaceregexp file="${dist}/web/index.html"
+							match="##author##"
+							replace="${author}"
+							flags="g" />
+  	
+  	<replaceregexp file="${dist}/web/index.html"
+							match="##versionNumber##"
+							replace="${versionNumber}"
+							flags="g" />
+  	
+	<replaceregexp file="${dist}/web/index.html"
+							match="##yourLink##"
+  							replace="${yourLink}"
+							flags="g" />
+  	
+  	<replaceregexp file="${dist}/web/index.html"
+  							match="##date##"
+  	  						replace="${date}"
+  	  						flags="g" />
+  	
+  	<replaceregexp file="${dist}/web/index.html"
+  							match="##keywords##"
+  	  						replace="${keywords}"
+  	  						flags="g" />
+							
+							
+	<antcall target="processExamples" />
+	
+  	
+  	<!-- finish organizating library's distribution -->
+  	<mkdir dir="${dist}/web/download" />
+  	<copy file="${dist}/${libraryName}-${versionNumber}.zip" todir="${dist}/web/download" />
+  	
+  	<copy todir="${processing}/${libraryName}/documentation">
+		<fileset dir="${javadoc}" />
+	</copy>
+  	
+  	<!-- done, finished. -->
+	</target>
+ 
+ 
+	<!-- XCode clean target task -->
+	<target name="clean" >
+		<delete dir="${dist}" />
+		<delete dir="${javadoc}" />
+		<delete dir="${build}" />
+	</target> 
+	
+	
+	<!-- parsing the examples folder -->
+	<target name="processExamples">
+	<dirset id="examples.contents" dir="examples" excludes="*/*"/>
+	<property name="examples.list" refid="examples.contents"/>
+	<foreach list="${examples.list}" target="addExamples" param="exampleDir" delimiter=";">
+	</foreach>
+	<!--echo>${examples.list}</echo-->
+	<!--foreach param="exampleDir" target="addExamples">
+		<path>
+			<dirset id="examples.contents" dir="examples" excludes="*/*"/>
+		</path>
+	</foreach-->
+		<replaceregexp file="${dist}/web/index.html"
+  							match="(##examples##)"
+  	  						replace=""
+  	  						flags="g" />
+	</target>
+	
+	<target name="addExamples" depends="settings">
+		<property name="exampleZipped" value="${exampleDir}.zip"/>
+		
+		<zip 	destfile="${dist}/web/examples/${exampleZipped}"
+			basedir="${dist}/web/examples/${exampleDir}/"
+			excludes="**/_DS.Store" />
+		
+		<replaceregexp  file="${dist}/web/index.html"
+				match="(##examples##)"
+  	  			replace="&lt;li&gt;&lt;a href=&quot;examples/${exampleZipped}&quot;&gt;${exampleDir}&lt;/a&gt;&lt;/li&gt; \1"
+  	  			flags="g" />
+	</target>
+</project>
+
