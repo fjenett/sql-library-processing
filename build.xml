@@ -6,34 +6,24 @@
 	</description>
 	
 	<target name="settings">
-
-<!-- #### (1) who is the author of this library?  edit value.  #### -->
-	<property name="author" value="Florian Jenett"/>
+		
+	<!-- == Change these two for building == -->
 	
-<!-- #### (2) which copyright?  edit value.  #### -->
-	<property name="copyright" value="(c) 2005 - 2009"/>
-
-<!-- #### (3) give your library a name. edit value.  #### -->
-	<property name="libraryName"  value="SQLibrary"/>
-	
-<!-- #### (4) give your library a name. edit value.   #### -->
-	<property name="versionNumber"  value="0.1.0"/>
-	
-<!-- #### (5) your contact url. edit value. #### -->
-	<property name="yourLink"  value="http://bezier.de/" />
-	
-	<property name="keywords" value="MySQL, SQLite, PostgreSQL, SQL, database"/>
-
-<!-- #### (5) where are your processing libraries located? edit location. #### -->
-	<property name="processing" location="/Users/fjenett/Documents/Processing/libraries"/>
-
-<!-- #### (6) set the java version that should be used to compile your library. #### -->	
-	<property name="javaVersion" value="1.5"/>
-
-<!-- #### (7) where are the jar files located that are required for compiling 
-		your library such as e.g. core.jar ? edit location. 
-#### -->
+	<!-- Change to point to Processings library folder (core.jar, etc) -->
 	<property name="libraryClasspath"  location="/Applications/Processing.app/Contents/Resources/Java/"/>
+	
+	<!-- Change to point to your user libraries folder inside your sketchbook -->
+	<property name="processing" location="/Users/fjenett/Documents/Processing/libraries"/>	
+	
+	<!-- No changes or adjustments required below -->
+
+	<property name="author" value="Florian Jenett"/>
+	<property name="copyright" value="(c) 2005 - 2009"/>
+	<property name="libraryName"  value="SQLibrary"/>
+	<property name="versionNumber"  value="0.1.0"/>
+	<property name="yourLink"  value="http://bezier.de/" />
+	<property name="keywords" value="MySQL, SQLite, PostgreSQL, SQL, database"/>
+	<property name="javaVersion" value="1.5"/>
 	
 	<path id="library-classes-add">
 		<fileset dir="lib">
@@ -43,16 +33,11 @@
 		</fileset>
 	</path>
 	<path id="library-classpath">
-		<fileset dir="${libraryClasspath}" >		
-<!-- #### (8) add the jar files that are required for compiling. edit name.
-		for more include files. duplicate <include name="" />
-#### -->
+		<fileset dir="${libraryClasspath}" >
 			<include name="core.jar"/>
 		</fileset>
 		<path refid="library-classes-add" />
 	</path>
-	
-	<!-- no changes or adjustments required below -->
 	
 	<property name="jarFile" value="${libraryName}.jar"/>
 	<property name="src" location="src"/>
@@ -65,7 +50,8 @@
 	
 	<target name="init" depends="settings">
 	
-<echo>Properties initialized.
+<echo>
+Properties initialized.
 src path		${src}
 bin path 		${bin}
 libraryClasspath	${libraryClasspath}
@@ -74,23 +60,21 @@ java version		${javaVersion}
 </echo>
 	
 	<buildnumber file="lib/build.number"/>
-	<tstamp> <!-- Create the time stamp -->
+	<tstamp>
 		<format property="date" pattern="MM/dd/yyyy" offset="0" unit="hour"/>
 	</tstamp>
 	<echo>Start to build the library ... this is vers. ${versionNumber}, build #${build.number} on ${date}</echo>
 	
-<!--
-	add ant-contrib package, needed for <foreach>
--->
-<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-  <classpath>
-    <pathelement location="lib/ant-contrib-1.0b3.jar"/>
-  </classpath>
-</taskdef>
+	<!-- add ant-contrib package, needed for <foreach> -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	<classpath>
+		<pathelement location="lib/ant-contrib-1.0b3.jar"/>
+	</classpath>
+	</taskdef>
+	
 	<mkdir dir="${dist}"/>
-  </target>
-  
-  <!--echo>${toString:library-classpath}</echo-->
+	</target>
+
   
 	<!-- compile the library -->
   <target name="compile" depends="init" description="compile the source" >  	
