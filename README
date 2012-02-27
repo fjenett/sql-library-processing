@@ -11,6 +11,9 @@
     setFromRow(object)
     saveToDatabase(object)
     insertUpdateIntoDatabase(table, columns, values)
+    
+    See:
+    https://github.com/fjenett/sqlibrary/blob/master/src/de/bezier/data/sql/SQL.java
 
 --------------------------------------------------------------------------------
 
