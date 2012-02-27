@@ -1,9 +1,10 @@
 package de.bezier.data.sql;
 
 import processing.core.*;
+import java.util.ArrayList;
 
 /**
- *		SQLite wrapper for SQL library for Processing 1.0
+ *		SQLite wrapper for SQL library for Processing 1+
  *		<p>
  *		A wrapper around some of sun's java.sql.* classes
  *		and the pure java "org.sqlite.JDBC" driver by zentus.com (BSD).
@@ -18,10 +19,7 @@ import processing.core.*;
  *		@author 		Florian Jenett - mail@florianjenett.de
  *
  *		created:		2008-11-29 12:15:15 - fjenett
- *		modified:		fjenett 20081129
- *
- *		@since 			0.0.7
- *		@version 		0.0.7
+ *		modified:		2012-02
  *
  */
 
@@ -63,5 +61,18 @@ extends de.bezier.data.sql.SQL
 		this.type = "sqlite";
 		
 		this.url = "jdbc:" + type + ":" + database;
+	}
+
+	public String[] getTableNames ()
+	{
+		if ( tableNames == null )
+		{
+			tableNames = new ArrayList<String>();
+	        query( "SELECT name AS 'table_name' FROM SQLITE_MASTER WHERE type=\"table\"" );
+			while ( next() ) {
+				tableNames.add( getObject("table_name").toString() );
+			}
+		}
+		return tableNames.toArray(new String[0]);
 	}
 }

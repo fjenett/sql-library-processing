@@ -1,14 +1,26 @@
 package de.bezier.data.sql;
 
 import processing.core.*;
+import de.bezier.data.sql.mapper.*;
 
 import java.io.*;
 import java.sql.*;
+import java.lang.reflect.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
 
 /**
- *		SQL library for Processing 1.0
+ *		<h1>SQL library for Processing 1+</h1>
+ *
+ *		Since v 0.2.0 it has some ORM like features, see 
+ *		<ul>
+ *			<li><a href="#setFromRow(java.lang.Object)">setFromRow(Object)</a></li>
+ *			<li><a href="#saveToDatabase(java.lang.Object)">saveToDatabase(Object)</a></li>
+ *			<li><a href="#insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])">insertUpdateIntoDatabase(String,Object[],Object[])</a></li>
+ *		</ul>
  *		
- *		see:<ul>
+ *		Links:<ul>
  *		<li>http://www.mysql.com/products/connector/j/</li>
  *		<li>http://java.sun.com/products/jdbc/</li>
  *		<li>http://www.toxi.co.uk/blog/2007/07/using-javadb-and-db4o-in-processing.htm</li>
@@ -18,14 +30,10 @@ import java.sql.*;
  *		@author 		Florian Jenett - mail@florianjenett.de
  *
  *		created:		07.05.2005 - 12:46 Uhr
- *		modified:		fjenett 20070801
- *
- *		@since 			004
- *		@version 		005 - added more general SQL, simplyfied MySQL
- *
+ *		modified:		fjenett 2012-02
  */
 
-public class SQL
+abstract public class SQL
 {
 	PApplet papplet;
 
@@ -44,20 +52,27 @@ public class SQL
 	public java.sql.ResultSet result;
 	
 	private boolean DEBUG = true;
+	private HashMap<ResultSet,String[]> columnNamesCache;
+	private NameMapper mapper;
+	private HashMap<Class,String> classToTableMap;
+	protected ArrayList<String> tableNames;
 	
 	/**
 	 *	Do not use this contructor.
 	 */
-	 
 	public SQL ()
 	{
-		System.out.println("SQL(): Please use this constructor\r\tSQL ( String _serv, String _db, String _u, String _p, PApplet _pa )");
+		System.out.println(
+			"SQL(): Please use this constructor\n"+
+			"\tSQL ( String _serv, String _db, String _u, String _p, PApplet _pa )"
+		);
+		
+		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
 	
 	/**
 	 *	You should not directly use the SQL.class instead use the classes for your database type.
 	 */
-	 
 	public SQL ( PApplet _pa, String _db )
 	{
 		this.user = "";
@@ -78,7 +93,10 @@ public class SQL
 				
 				if ( !ff.exists() || !ff.canRead() )
 				{
-					System.err.println("Sorry can't find any file named "+_db+" make sure it exists and the path is correct.");
+					System.err.println(
+						"Sorry can't find any file named " + _db +
+						" make sure it exists and the path is correct."
+					);
 				}
 			}
 		}
@@ -91,13 +109,13 @@ public class SQL
 	
 		this.papplet = _pa;
 		papplet.registerDispose( this );
+		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
 	
 	
 	/**
 	 *	You should not directly use the SQL.class instead use the classes for your database type.
 	 */
-	
 	public SQL ( PApplet _pa, String _serv, String _db, String _u, String _p )
 	{
 		this.server = _serv;
@@ -110,12 +128,27 @@ public class SQL
 		
 		this.papplet = _pa;
 		papplet.registerDispose( this );
+		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
+	}
+	
+	/**
+	 *	Turn some debugging on/off.
+	 *
+	 *	@param 	yesNo	Turn it on or off
+	 */
+	public void setDebug ( boolean yesNo )
+	{
+		DEBUG = yesNo;
+	}
+	
+	public boolean getDebug ()
+	{
+		return DEBUG;
 	}
 	
 	/**
 	 *	Open the database connection with the parameters given in the contructor.
 	 */
-	 
 	public boolean connect()
 	{
 		if ( driver == null || driver.equals("") ||
@@ -149,9 +182,14 @@ public class SQL
 			
 		}
 		
-		// removed finally block, thanks nao
+		getTableNames();
 		
 		return true;
+	}
+	
+	private void preQueryOrExecute () 
+	{
+		result = null;
 	}
 	
 	/**
@@ -159,31 +197,51 @@ public class SQL
 	 *
 	 *	@param	_sql	The SQL command to execute
 	 */
-	
 	public void execute ( String _sql )
 	{
-		if ( connection == null )
-		{
-			System.out.println( "SQL.query(): You need to connect() first." );
+		preQueryOrExecute();
+		
+		query( _sql, false );
+	}
+
+	/**
+	 *	Execute a SQL command on the open database connection. 
+	 *	Arguments are passed to String.format() first.
+	 *
+	 *	@param	_sql	SQL command as pattern for String.format()
+	 *	@param	args	Zero or more objects to be passed to String.format()
+	 *
+	 *  @see <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax">Format syntax</a>
+	 *	@see java.lang.String#format(java.lang.String,java.lang.Object...)
+	 */
+	public void execute ( String _sql, Object ... args )
+	{
+		preQueryOrExecute();
+		
+		if ( args == null || args.length == 0 ) queryOrExecute( _sql, false );
+		
+		Method meth = null;
+		try {
+			meth = String.class.getMethod( 
+				"format", 
+				String.class, 
+				java.lang.reflect.Array.newInstance(Object.class,0).getClass() 
+			);
+		} catch ( Exception ex ) {
+			ex.printStackTrace();
 			return;
 		}
-		
-		previousQuery = _sql;
-		
-		try
-		{
-			if ( statement == null )
-			{
-				statement = connection.createStatement();
-			}
-			
-			statement.execute( _sql );
+		// Object[] args2 = new Object[args.length+1];
+		// args2[0] = _sql;
+		// System.arraycopy( args, 0, args2, 1, args.length );
+		String sql2 = null;
+		try {
+			sql2 = (String)meth.invoke( null, _sql, args );
+		} catch ( Exception ex ) {
+			if (DEBUG) ex.printStackTrace();
 		}
-		catch ( java.sql.SQLException e )
-		{
-			System.out.println( "SQL.query(): java.sql.SQLException.\r" );
-			if (DEBUG) e.printStackTrace();
-		}
+		
+		queryOrExecute( sql2, false );
 	}
 	
 	
@@ -192,8 +250,58 @@ public class SQL
 	 *
 	 *	@param	_sql	SQL command to execute for the query
 	 */
-		
 	public void query ( String _sql )
+	{
+		preQueryOrExecute();
+		
+		queryOrExecute( _sql, true );
+	}
+
+
+	/**
+	 *	Issue a query on the open database connection.
+	 *	Arguments are passed to String.format() first.
+	 *
+	 *	@param _sql	SQL command as pattern for String.format()
+	 *  @param args	Zero or more objects to be passed to String.format()
+	 *
+	 *  @see <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax">Format syntax</a>
+	 *	@see java.lang.String#format(java.lang.String,java.lang.Object...)
+	 */
+	public void query ( String _sql, Object ... args )
+	{
+		preQueryOrExecute();
+		
+		if ( args == null || args.length == 0 ) queryOrExecute( _sql, true );
+		
+		Method meth = null;
+		try {
+			meth = String.class.getMethod( 
+				"format", 
+				String.class, 
+				java.lang.reflect.Array.newInstance(Object.class,0).getClass() 
+			);
+		} catch ( Exception ex ) {
+			ex.printStackTrace();
+			return;
+		}
+		// Object[] args2 = new Object[args.length+1];
+		// args2[0] = _sql;
+		// System.arraycopy( args, 0, args2, 1, args.length );
+		String sql2 = null;
+		try {
+			sql2 = (String)meth.invoke( null, _sql, args );
+		} catch ( Exception ex ) {
+			if (DEBUG) ex.printStackTrace();
+		}
+		
+		queryOrExecute( sql2, true );
+	}
+	
+	/**
+	 *	Query implemenbtation called by execute() / query()
+	 */
+	private void queryOrExecute ( String _sql, boolean keep )
 	{
 		if ( connection == null )
 		{
@@ -210,7 +318,10 @@ public class SQL
 				statement = connection.createStatement();
 			}
 			
-			result = statement.executeQuery( _sql );
+			java.sql.ResultSet result = statement.executeQuery( _sql );
+			
+			if ( keep )
+				this.result = result; 
 		}
 		catch ( java.sql.SQLException e )
 		{
@@ -224,7 +335,6 @@ public class SQL
 	 *
 	 *	@return	boolean	true if more results are available, false otherwise
 	 */
-	
 	public boolean next ()
 	{	
 		if ( result == null )
@@ -246,6 +356,73 @@ public class SQL
 	}
 	
 	/**
+	 *	Get names of available tables in active database,
+	 *	needs to be implemented per db adapter.
+	 *
+	 * @return String[] The table names
+	 */
+	abstract public String[] getTableNames ();
+	
+	/**
+	 *	Returns an array with the column names of the last request.
+	 *
+	 *	@return String[] the column names of last result or null
+	 */
+	public String[] getColumnNames ()
+	{
+		String[] colNames = null;
+		
+		if ( result == null )
+		{
+			System.out.println( "SQL.getColumnNames(): You need to query() something first." );
+			return null;
+		}
+		
+		// if ( columnNamesCache == null )
+		// 	columnNamesCache = new HashMap<ResultSet,String[]>();
+		// 	
+		// colNames = columnNamesCache.get( result );
+		// if ( colNames != null ) return colNames;
+		
+		java.sql.ResultSetMetaData meta = null;
+		try {
+			meta = result.getMetaData();
+		} catch ( SQLException sqle ) {
+			if (DEBUG) sqle.printStackTrace();
+			return null;
+		}
+		
+		if ( meta != null ) 
+		{
+			try {
+				colNames = new String[ meta.getColumnCount() ];
+				for ( int i = 1, k = meta.getColumnCount(); i <= k; i++ ) 
+				{
+					colNames[i-1] = meta.getColumnName( i );
+				}
+			} catch ( SQLException sqle ) {
+				if (DEBUG) sqle.printStackTrace();
+				return null;
+			}
+		}
+		
+		// columnNamesCache.clear();
+		// columnNamesCache.put( result, colNames );
+		
+		return colNames;
+	}
+	
+	/**
+	 *	Get connection. ... in case you want to do JDBC stuff directly.
+	 *
+	 *	@return java.sql.Connection The connection
+	 */
+	public java.sql.Connection getConnection ()
+	{
+		return connection;
+	}
+	
+	/**
 	 *	Read an integer value from the specified field.
 	 *	Represents an INT / INTEGER type:
 	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
@@ -254,7 +431,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	int	Value of the field or 0
 	 */
-	
 	public int getInt ( String _field )
 	{
 		// TODO: 0 does not seem to be a good return value for a numeric field to indicate failure
@@ -308,7 +484,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	long	Value of the field or 0
 	 */
-	 
 	public long getLong ( String _field )
 	{
 		if ( result == null )
@@ -358,7 +533,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	float	Value of the field or 0
 	 */
-	 
 	public float getFloat ( String _field )
 	{
 		if ( result == null )
@@ -409,7 +583,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	double	Value of the field or 0
 	 */
-	 
 	public double getDouble ( String _field )
 	{
 		if ( result == null )
@@ -460,7 +633,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	java.math.BigDecimal	Value of the field or null
 	 */
-	 
 	public java.math.BigDecimal getBigDecimal ( String _field )
 	{
 		if ( result == null )
@@ -511,7 +683,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	boolean	Value of the field or 0
 	 */
-	 
 	public boolean getBoolean ( String _field )
 	{
 		if ( result == null )
@@ -562,7 +733,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	String	Value of the field or null
 	 */
-	 
 	public String getString ( String _field )
 	{
 		if ( result == null )
@@ -613,7 +783,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	java.sql.Date	Value of the field or null
 	 */
-	 
 	public java.sql.Date getDate ( String _field )
 	{
 		if ( result == null )
@@ -664,7 +833,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	java.sql.Time	Value of the field or null
 	 */
-	 
 	public java.sql.Time getTime ( String _field )
 	{
 		if ( result == null )
@@ -715,7 +883,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	java.sql.Timestamp	Value of the field or null
 	 */
-	 
 	public java.sql.Timestamp getTimestamp ( String _field )
 	{
 		if ( result == null )
@@ -763,7 +930,6 @@ public class SQL
 	 *	@param	_field	The name of the field
 	 *	@return	Object	Value of the field or null
 	 */
-	 
 	public Object getObject ( String _field )
 	{
 		if ( result == null )
@@ -807,7 +973,6 @@ public class SQL
 	/**
 	 *	Close the database connection
 	 */
-	 
 	public void close()
 	{
 		dispose();
@@ -817,7 +982,6 @@ public class SQL
 	/**
 	 *	Callback function for PApplet.registerDispose()
 	 */
-	 
 	public void dispose ()
 	{
 		if ( result != null )
@@ -851,6 +1015,445 @@ public class SQL
 			catch ( java.sql.SQLException e ) { ; }
 			
 			connection = null;
+		}
+	}
+	
+	/**
+	 *	Set the current NameMapper
+	 *
+	 *	@param mapper the name mapper
+	 *  @see de.bezier.data.sql.mapper.NameMapper
+	 */
+	public void setNameMapper ( NameMapper mapper )
+	{
+		this.mapper = mapper;
+	}
+	
+	/**
+	 *	Get the current NameMapper
+	 *
+	 *  @see de.bezier.data.sql.mapper.NameMapper
+	 */
+	public NameMapper getNameMapper ()
+	{
+		return mapper;
+	}
+	
+	/**
+	 *	<p>Highly experimental ...<br />
+	 *	tries to map column names to public fields or setter methods 
+	 *	in the given object.</p>
+	 *	
+	 *	<p>Use like so:
+	 *  <pre>
+	 *	db.query("SELECT name, id, sometime FROM table");
+	 *
+	 *	while ( db.next() ) {
+	 *		SomeObject obj = new SomeObject();
+	 *		db.setFromRow(obj);
+	 *		// obj.name is now same as db.getString("name"), etc. 
+	 *  }
+	 *  </pre></p>
+	 *
+	 *	<p>SomeObject might look like: 
+	 *	<pre>
+	 *	class SomeObject {
+	 *		public String name;
+	 *		public int id;
+	 *		Date sometime;
+	 *	}
+	 *	</pre></p>
+	 *
+	 *	@param object The object to populate from the currently selected row
+	 */
+	public void setFromRow ( Object object )
+	{
+		if ( object == null ) {
+			System.err.println( "SQL.rowToObject(): Handing in null won't cut it." );
+			return;
+		}
+		
+		if ( result == null ) {
+			System.err.println( "SQL.rowToObject(): You need to query() something first!" );
+			return;
+		}
+		
+		String[] colNames = getColumnNames();
+		if ( colNames == null )
+		{
+			System.err.println( 
+				"SQL.rowToObject(): uh-oh something went wrong: unable to get column names." );
+			return;
+		}
+		
+		if ( colNames.length > 0 ) 
+		{
+			Class klass = null;
+			try {
+				klass = Class.forName("DeBezierDataSQL");
+			} catch ( Exception e ) {
+				if (DEBUG) e.printStackTrace();
+			}
+			if ( klass != null ) {
+				Method meth = null;
+				try {
+					meth = klass.getMethod(
+						"setFromRow",
+						new Class[]{ SQL.class, Object.class }
+					);
+				} catch ( Exception e ) {
+					if (DEBUG) e.printStackTrace();
+				}
+				// System.out.println( meth );
+				// System.out.println( meth.getParameterTypes() );
+				if ( meth != null ) {
+					try {
+						meth.invoke( null, this, object );
+					} catch ( Exception e ) {
+						if (DEBUG) e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 *	Convert a field name to a setter name: fieldName -> setFieldName().
+	 */
+	public String nameToSetter ( String name )
+	{
+		if ( name == null ) return name;
+		if ( name.length() == 0 ) return null;
+		return "set" + name.substring(0,1).toUpperCase() + name.substring(1);
+	}
+
+	/**
+	 *	Convert a field name to a getter name: fieldName -> getFieldName().
+	 */
+	public String nameToGetter ( String name )
+	{
+		if ( name == null ) return name;
+		if ( name.length() == 0 ) return null;
+		return "get" + name.substring(0,1).toUpperCase() + name.substring(1);
+	}
+	
+	/**
+	 *	Set a table name for a class.
+	 */
+	public void registerTableNameForClass ( String name, Object classOrObject )
+	{
+		if ( name == null || name.equals("") || classOrObject == null ) return;
+		
+		Class klass = null;
+		if ( classOrObject.getClass() != Class.class )
+			klass = classOrObject.getClass();
+		else
+			klass = (Class)classOrObject;
+			
+		if ( classToTableMap == null )
+			classToTableMap = new HashMap<Class,String>();
+		
+		classToTableMap.put( klass, name );
+		if (DEBUG) System.out.println( String.format(
+			"Class \"%s\" is now mapped to table \"%s\"", klass.getName(), name
+		));
+	}
+	
+	/**
+	 *
+	 */
+	public void saveToDatabase ( Object object )
+	{
+		if ( object == null ) return;
+		
+		// Find the table name
+		
+		String tableName = null;
+		
+		if ( classToTableMap == null )
+			classToTableMap = new HashMap<Class,String>();
+		
+		tableName = classToTableMap.get(object.getClass()); 
+		
+		if ( tableName != null )
+			saveToDatabase( tableName, object );
+		else
+		{
+			Class klass = object.getClass();
+			tableName = klass.getName();
+			
+			for ( char c : new char[]{'$','.'} )
+			{
+				int indx = tableName.lastIndexOf(c);
+				if ( indx >= 0 ) {
+					tableName = tableName.substring(indx+1);
+				}
+			}
+			
+			if ( mapper != null ) {
+				tableName = mapper.backward(tableName);
+			}
+			
+			registerTableNameForClass( tableName, klass );
+			
+			saveToDatabase( tableName, object );
+		}
+	}
+	
+	/**
+	 *	Takes a table name and an object and tries to construct a set of
+	 *	columns names from fields and getters found in the object. After
+	 *	the values are fetched from the object all is passed to 
+	 *	insertUpdateIntoDatabase().
+	 *
+	 * @param String tableName The name of the table
+	 * @param Object object The object to look at
+	 * @see insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
+	 */
+	public void saveToDatabase ( String tableName, Object object )
+	{
+		if ( object == null ) return;
+		
+		String[] tableNames = getTableNames();
+		if ( !java.util.Arrays.asList(tableNames).contains(tableName) ) {
+			System.err.println(String.format(
+				"saveToDatabase(): table '%s' not found in database '%s'", tableName, database
+			));
+			return;
+		}
+		
+		String[] colNames = getColumnNames();
+		String[] fieldNames = new String[colNames.length];
+
+		if ( mapper != null ) 
+		{
+			for ( int i = 0; i < colNames.length; i++ ) 
+			{
+				//System.out.println(colNames[i]);
+				fieldNames[i] = mapper.forward(colNames[i]);
+				//System.out.println(fieldNames[i]);
+			}
+		}
+		
+		Class klass = object.getClass();
+		Field[] fields = new Field[colNames.length];
+		Method[] getters = new Method[colNames.length];
+		
+		for ( int i = 0; i < colNames.length; i++ )
+		{
+			String fieldName = fieldNames[i];
+			String colName = colNames[i];
+			
+			Field f = null;
+			try {
+				f = klass.getField(fieldName);
+				if ( f == null ) {
+					f = klass.getField(colName);
+				}
+			} catch ( Exception e ) {
+				if (DEBUG) e.printStackTrace();
+			}
+			if ( f != null ) {
+				// try {
+				// 	values[i] = f.get(object);
+				// } catch ( Exception e ) {
+				// 	if (DEBUG) e.printStackTrace();
+				// }
+				fields[i] = f;
+			}
+			else
+			{
+				if (DEBUG) System.out.println( "Field not found, trying setter method" );
+				
+				String getterName = nameToGetter(fieldName);
+				Method getter = null;
+				try {
+					getter = klass.getMethod(
+						getterName, new Class[0]
+					);
+				} catch ( Exception e ) {
+					if (DEBUG) e.printStackTrace();
+				}
+				// try {
+				// 	values[i] = getter.invoke(object);
+				// } catch ( Exception e ) {
+				// 	if (DEBUG) e.printStackTrace();
+				// }
+				getters[i] = getter;
+			}
+			if ( fields[i] == null && getters[i] == null ) {
+				System.err.println(String.format(
+					"Unable to get a field or getter for column '%s'", colName
+				));
+				return;
+			}
+		}
+		
+		Object[] values = null;
+		
+		Class clazz = null;
+		try {
+			clazz = Class.forName("DeBezierDataSQL");
+		} catch ( Exception e ) {
+			if (DEBUG) e.printStackTrace();
+		}
+		
+		if ( klass != null ) {
+			Method meth = null;
+			try {
+				meth = clazz.getMethod(
+					"getValuesFromObject",
+					new Class[]{ SQL.class, Field[].class, Method[].class, Object.class }
+				);
+			} catch ( Exception e ) {
+				if (DEBUG) e.printStackTrace();
+			}
+			// System.out.println( meth );
+			// System.out.println( meth.getParameterTypes() );
+			if ( meth != null ) {
+				try {
+					values = (Object[])meth.invoke( null, this, fields, getters, object );
+				} catch ( Exception e ) {
+					if (DEBUG) e.printStackTrace();
+				}
+			}
+		}
+		
+		if ( values != null ) 
+		{
+			insertUpdateInDatabase( tableName, colNames, values );
+		}
+		else
+		{
+			System.err.println("saveToDatabase() : trouble, trouble!!");
+		}
+	}
+	
+	/**
+	 *	Insert or update a bunch of values in the database. If the given table has a 
+	 *	primary key the entry will be updated if it already existed.
+	 *
+	 *	@param String tableName The name of the table
+	 *	@param String[] columnNames The names of the columns to fill or update
+	 *	@param Object[] values The values to instert or update
+	 */
+	public void insertUpdateInDatabase ( String tableName, String[] columnNames, Object[] values )
+	{
+		HashMap<Object, Object> valuesKeys = new HashMap<Object,Object>();
+		for ( int i = 0; i < values.length; i++ )
+		{
+			valuesKeys.put(columnNames[i], values[i]);
+		}
+		
+		HashMap<String, Object> primaryKeys = null;
+		try {
+			DatabaseMetaData meta = connection.getMetaData();
+			ResultSet rs = meta.getPrimaryKeys(null, null, tableName);
+			
+		    while ( rs.next() )
+			{
+				if ( primaryKeys == null )
+			    	primaryKeys = new HashMap<String, Object>();
+		    	
+				String columnName = rs.getString("COLUMN_NAME");
+		    	primaryKeys.put(columnName, valuesKeys.get(columnName));
+				valuesKeys.remove(columnName);
+		    }
+			
+		} catch ( SQLException sqle ) {
+			sqle.printStackTrace();
+		}
+		
+		//System.out.println(valuesKeys);
+		//System.out.println(primaryKeys);
+		
+		String cols = "";
+		String patt = "";
+		HashMap<Object, Integer> valueIndices = new HashMap<Object, Integer>();
+		int i = 1;
+		for ( Map.Entry e : valuesKeys.entrySet() ) 
+		{
+			cols += ( i > 1 ? " , " : "" ) + e.getKey();
+			patt += ( i > 1 ? " , " : "" ) + "?";
+			valueIndices.put( e.getKey(), i );
+			i++;
+		}
+		
+		String sql = null, opts = null;
+		HashMap<Object, Integer> primaryIndices = null;
+		if ( primaryKeys == null || primaryKeys.size() == 0 ) {
+			sql = "INSERT INTO " + tableName + " ( " + cols + " ) VALUES ( " + patt + " )";
+		} else {
+			primaryIndices = new HashMap<Object, Integer>();
+			opts = " WHERE ";
+			int p = 1;
+			for ( Map.Entry e : primaryKeys.entrySet() ) {
+				opts += (p > 1 ? " , " : "") + e.getKey() + " = ? ";
+				primaryIndices.put( e.getKey(), p );
+				p++;
+			}
+			//System.out.println( opts );
+			String sqlFind = "SELECT * FROM "+tableName+" "+opts;
+			//System.out.println( sqlFind );
+			try {
+				PreparedStatement psFind = connection.prepareStatement( sqlFind );
+				for ( Map.Entry e : primaryKeys.entrySet() ) {
+					psFind.setString( primaryIndices.get(e.getKey()), e.getValue().toString() );
+				}
+				result = psFind.executeQuery();
+				boolean found = next();
+				psFind.close();
+				if ( !found ) {
+					if (DEBUG) System.out.println(String.format(
+						"No entry with %s found in table '%s'", primaryKeys.toString(), tableName
+					));
+					int k = 1, m = valueIndices.size();
+					for ( Map.Entry e : primaryKeys.entrySet() ) {
+						cols += ( m > 0 ? " , " : "" ) + e.getKey();
+						patt += ( m > 0 ? " , " : "" ) + "?";
+						valuesKeys.put( e.getKey(), e.getValue() );
+						valueIndices.put( e.getKey(), m+k );
+						k++;
+					}
+					sql = "INSERT INTO " + tableName + " ( " + cols + " ) VALUES ( " + patt + " )";
+					primaryKeys = null;
+				}
+				else
+				{
+					cols = "";
+					for ( Map.Entry e : valuesKeys.entrySet() )
+					{
+						cols += ( cols.equals("") ? "" : " , " ) + e.getKey() + " = " + "?";
+					}
+					sql = "UPDATE "+tableName+" SET " + cols + " " + opts;
+				}
+			} catch ( java.sql.SQLException sqle ) {
+				sqle.printStackTrace();
+			}
+		}
+		
+		if (DEBUG) System.out.println( sql );
+		
+		try {
+			PreparedStatement ps = connection.prepareStatement( sql );
+			
+			for ( Map.Entry e : valuesKeys.entrySet() )
+			{
+				ps.setString( valueIndices.get(e.getKey()), e.getValue()+"" );
+			}
+			
+			if ( primaryKeys != null ) 
+			{
+				for ( Map.Entry e : primaryKeys.entrySet() )
+				{
+					ps.setString( valueIndices.size()+primaryIndices.get(e.getKey()), e.getValue()+"" );
+				}
+			}
+			
+			ps.executeUpdate();
+			ps.close();
+		} catch ( java.sql.SQLException sqle ) {
+			sqle.printStackTrace();
 		}
 	}
 }

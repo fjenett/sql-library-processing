@@ -1,9 +1,10 @@
 package de.bezier.data.sql; 
 
 import processing.core.*;
+import java.util.ArrayList;
 
 /**
- *		PostgreSQL wrapper for SQL library for Processing 1.0
+ *		PostgreSQL wrapper for SQL library for Processing 1+
  *		<p>
  *		This is a wrapper around some of sun's java.sql.* classes
  *		and the "org.postgresql.Driver" driver by postgresql.org (BSD).
@@ -25,10 +26,7 @@ import processing.core.*;
  *		@author 		Florian Jenett - mail@florianjenett.de
  *
  *		created:		2008-11-29 17:49:23 - fjenett
- *		modified:		fjenett 20081129
- *
- *		@since 			0.0.1
- *		@version 		0.0.7
+ *		modified:		fjenett 2012-02
  *
  */
 
@@ -62,5 +60,18 @@ extends de.bezier.data.sql.SQL
 		this.type = "postgresql";
 		
 		this.url = "jdbc:" + type + "://" + server +  "/" + database;
+	}
+
+	public String[] getTableNames ()
+	{
+		if ( tableNames == null )
+		{
+			tableNames = new ArrayList<String>();
+	        query( "SELECT relname AS 'table_name' FROM pg_stat_user_tables WHERE schemaname='public'" );
+			while ( next() ) {
+				tableNames.add( getObject("table_name").toString() );
+			}
+		}
+		return tableNames.toArray(new String[0]);
 	}
 }

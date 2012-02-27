@@ -1,9 +1,10 @@
 package de.bezier.data.sql;
 
 import processing.core.*;
+import java.util.ArrayList;
 
 /**
- *		MySQL wrapper for SQL library for Processing 1.0
+ *		MySQL wrapper for SQL library for Processing 1+
  *		<p>
  *		A wrapper around some of sun's java.sql.* classes
  *		and the "com.mysql.jdbc.Driver" driver by mysql.com (GPL).
@@ -16,10 +17,7 @@ import processing.core.*;
  *		@author 		Florian Jenett - mail@florianjenett.de
  *
  *		created:		07.05.2005 - 12:46 Uhr
- *		modified:		fjenett 20081129
- *
- *		@since 			0.0.1
- *		@version 		0.0.7
+ *		modified:		2012-02
  *
  */
 
@@ -53,5 +51,18 @@ extends de.bezier.data.sql.SQL
 		this.type = "mysql";
 		
 		this.url = "jdbc:" + type + "://" + server +  "/" + database;
+	}
+	
+	public String[] getTableNames ()
+	{
+		if ( tableNames == null ) 
+		{
+			tableNames = new ArrayList<String>();
+			query( "SHOW TABLES" );
+			while ( next() ) {
+				tableNames.add( getObject("Tables_in_"+database).toString() );
+			}
+		}
+		return tableNames.toArray(new String[0]);
 	}
 }

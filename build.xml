@@ -18,9 +18,9 @@
 	<!-- No changes or adjustments required below -->
 
 	<property name="author" value="Florian Jenett"/>
-	<property name="copyright" value="(c) 2005 - 2009"/>
+	<property name="copyright" value="(c) 2005 - 2012"/>
 	<property name="libraryName"  value="SQLibrary"/>
-	<property name="versionNumber"  value="0.1.0"/>
+	<property name="versionNumber"  value="0.2.0"/>
 	<property name="yourLink"  value="http://bezier.de/" />
 	<property name="keywords" value="MySQL, SQLite, PostgreSQL, SQL, database"/>
 	<property name="javaVersion" value="1.5"/>
