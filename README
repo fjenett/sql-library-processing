@@ -6,11 +6,11 @@
 --------------------------------------------------------------------------------
 
     It's not an ORM (and will not become one) but it has some handy features
-	since v0.2.0 that makes it easier to load and save objects to a database.
-	
-	setFromRow(object)
-	saveToDatabase(object)
-	insertUpdateIntoDatabase(table, columns, values)
+    since v0.2.0 that makes it easier to load and save objects to a database.
+    
+    setFromRow(object)
+    saveToDatabase(object)
+    insertUpdateIntoDatabase(table, columns, values)
 
 --------------------------------------------------------------------------------
 
