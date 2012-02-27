@@ -1160,7 +1160,13 @@ abstract public class SQL
 	}
 	
 	/**
+	 *	Take an object, try to find table name from object name (or look it up),
+	 *	get fields and getters from object and pass that on to
+	 *	insertUpdateIntoDatabase(table, columns, values).
 	 *
+	 *	@param Object object The object to save to db
+	 *
+	 *  @see insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
 	 */
 	public void saveToDatabase ( Object object )
 	{
@@ -1208,6 +1214,7 @@ abstract public class SQL
 	 *
 	 * @param String tableName The name of the table
 	 * @param Object object The object to look at
+	 *
 	 * @see insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
 	 */
 	public void saveToDatabase ( String tableName, Object object )
