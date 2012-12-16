@@ -33,10 +33,9 @@ http://jdbc.postgresql.org/download.html
 BSD, http://jdbc.postgresql.org/license.html
 
 SQLite JDBC driver
-sqlitejdbc-v036-nested.jar
-sqlitejdbc-v053-pure.jar
-http://www.zentus.com/sqlitejdbc/
-BSD, http://www.zentus.com/sqlitejdbc/license.html
+sqlite-jdbc-3.7.2.jar
+http://code.google.com/p/sqlite-jdbc/
+Apache License 2.0, http://www.apache.org/licenses/LICENSE-2.0
     
 --------------------------------------------------------------------------------
 
