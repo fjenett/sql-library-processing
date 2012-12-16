@@ -285,9 +285,7 @@ abstract public class SQL
 			ex.printStackTrace();
 			return;
 		}
-		// Object[] args2 = new Object[args.length+1];
-		// args2[0] = _sql;
-		// System.arraycopy( args, 0, args2, 1, args.length );
+		
 		String sql2 = null;
 		try {
 			sql2 = (String)meth.invoke( null, _sql, args );
@@ -318,15 +316,20 @@ abstract public class SQL
 				statement = connection.createStatement();
 			}
 			
-			java.sql.ResultSet result = statement.executeQuery( _sql );
-			
-			if ( keep )
-				this.result = result; 
+			boolean hasResults = statement.execute( _sql );
+
+			if ( keep && hasResults )
+			{
+				this.result = statement.getResultSet();
+			}
 		}
 		catch ( java.sql.SQLException e )
 		{
 			System.out.println( "SQL.query(): java.sql.SQLException.\r" );
-			if (DEBUG) e.printStackTrace();
+			if (DEBUG) {
+				System.out.println( _sql );
+				e.printStackTrace();
+			}
 		}
 	}
 	
