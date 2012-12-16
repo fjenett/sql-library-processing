@@ -1,31 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<!-- 
-	(1) replace the following placeholders:
-	##yourLibrary## with the name of your library
-	##author## with your name
-	##date## with the current date
-	##versionNumber## with the current version number of your library.
-	##yourLink## to this page or your homepage.
-	
-	(2) make adjustments to any item below where necessary.
--->
-
-<title>##yourLibrary##</title>
-<meta name="description" content="a library for the programming environment processing" />
-<meta name="keywords" content="##author##, ##yourLibrary##, ##keywords##" />
-<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="Content-Language" content="en-us" />
-<meta name="ROBOTS" content="index,follow,archive" />
-<meta http-equiv="imagetoolbar" content="false" />
-<meta name="MSSmartTagsPreventParsing" content="true" />
-<meta name="author" content="##author##" />
-<meta name="Rating" content="General" />
-<meta name="revisit-after" content="7 Days" />
-<meta name="doc-class" content="Living Document" />
-<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+	<meta charset="utf-8">
+	<title>##yourLibrary## version ##versionNumber## - by ##author##</title>
+	<meta name="description" content="a library for the programming environment processing" />
+	<meta name="keywords" content="##author##, ##yourLibrary##, ##keywords##" />
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Language" content="en-us" />
+	<meta name="ROBOTS" content="index,follow,archive" />
+	<meta http-equiv="imagetoolbar" content="false" />
+	<meta name="MSSmartTagsPreventParsing" content="true" />
+	<meta name="author" content="##author##" />
+	<meta name="Rating" content="General" />
+	<meta name="revisit-after" content="7 Days" />
+	<meta name="doc-class" content="Living Document" />
+	<link rel="stylesheet" type="text/css" href="./stylesheet.css">
 </head>
 <body>
 	<div id="container">
@@ -34,7 +23,9 @@
 			<h1>##yourLibrary##</h1>
 			<p>by <a href="###yourLink##">##author##</a></p>
 		</div>
+
 		<br class="clear" />
+
 		<div id="menu">
 			<ul>
 				<li><a href="#about">About</a> \ </li>
@@ -52,100 +43,107 @@
 		<div id="content" class="clear" style="margin-top:40px;">
 			
 			<div id="about">
-			<h2>##yourLibrary##.</h2>
-			<p>
-			a library for the programming environment <a href="http://www.processing.org" target="_blank">processing</a>.<br />
-			last update, ##date##.
-			</p>
-			<p>
-			SQLibrary lets you communicate with a MySQL, PostgreSQL or SQLite database.
-			</p>
-			<p>
-				<em>please note: working with a remote database in a plublicly accessible applet is highly insecure.</em>
-			</p>
+				<h2>##yourLibrary##</h2>
+				<p>
+				a library for the programming environment <a href="http://www.processing.org" target="_blank">processing</a>.<br />
+				last update, ##date##.
+				</p>
+				<p>
+					SQLibrary lets you communicate with a <a href="http://dev.mysql.com/">MySQL</a>, <a href="http://www.postgresql.org/">PostgreSQL</a> or <a href="http://www.sqlite.org/">SQLite</a> databases.
+				</p>
+				<p>
+					<em>please note: working with a remote database in a plublicly accessible applet is highly insecure.</em>
+				</p>
 			</div>
 			
 			
 			<br class="clear" />
 			
 			<div id="download">
-			<h2>download</h2>
-			<p>
-			download ##yourLibrary## version ##versionNumber## in <a href="./download/##yourLibrary##-##versionNumber##.zip">.zip format</a>
-			</p>
-			<h2>installation</h2>
-			<p>
-			before trying to use this library with any database make sure you have that up and running. 
-			the library is just a wrapper to help connect to <em>already installed and running</em> databases (MySQL, SQLite, PostgreSQL).
-			</p>
-			<p>
-			installing the library itself:
-			<ul>
-				<li>quit processing</li>
-				<li>find your <em>sketchbook</em> folder, <a href="http://www.processing.org/reference/environment/#Sketchbook" >see second paragraph here</a></li>
-				<li>add a folder called <em>libraries</em> (lowercase) to your sketchbook if its not already there</li>
-				<li>move the <em>##yourLibrary##-##versionNumber##.zip</em> into that <em>libraries</em> folder</li>
-				<li>unzip it in place</li>
-				<li>rename it to <em>##yourLibrary##</em></li>
-				<li>start processing and run one of the included examples to see if the lib is working</li>
-			</ul>
-			</p>
+				<h2>Download</h2>
+				
+				<p>
+				Get ##yourLibrary## version ##versionNumber## in <a href="./download/##yourLibrary##-##versionNumber##.zip">.zip format</a>
+				</p>
+
+				<h2>Installation</h2>
+				
+				<p>
+				<b>Before</b> trying to use this library with any database make sure you have that up and running. 
+				the library is just a wrapper to help connect to <em>already installed and running</em> databases (MySQL, SQLite, PostgreSQL).
+				</p>
+				<p>
+					<b>Installation in Processing 2.0</b> should be as easy as opening the "Library Manager" from the menu at:<br />
+					Sketch &gt; Import Library ... &gt; Add Library ... &gt; (select ##yourLibrary## and click "install")
+				</p>
+				<p>
+					<b>Manual installation (Processing 1.5 and earlier):</b>
+					<ul>
+						<li>Quit processing</li>
+						<li>Find your <em>sketchbook</em> folder, <a href="http://www.processing.org/reference/environment/#Sketchbook" >see second paragraph here</a></li>
+						<li>Add a folder called <em>libraries</em> (lowercase) to your sketchbook if its not already there</li>
+						<li>Move the <em>##yourLibrary##-##versionNumber##.zip</em> into that <em>libraries</em> folder</li>
+						<li>Unzip it in place</li>
+						<li>Rename it to <em>##yourLibrary##</em></li>
+						<li>Start processing and run one of the included examples to see if the lib is working</li>
+					</ul>
+				</p>
 			</div>	
 			
 			
 			<div id="resources">
-			<p><strong>keywords</strong>
-			##keywords##
-			</p>
-			<p><strong>documentation</strong>. have a look at the online documentation <a href="./documentation/index.html" target="_blank">here</a>. a copy of the documentation is included in the .zip as well.
-			</p>		
-			<p><strong>source</strong>. the source code is included in the download.
-			</p>			
+				<p><strong>Keywords: </strong> ##keywords##
+				</p>
+				<p><strong>Documentation</strong> is <a href="./documentation/index.html" target="_blank">online here</a> and included in the download.
+				</p>		
+				<p><strong>Source</strong> is <a href="https://github.com/fjenett/sql-library-processing">located here</a> and included in the download.
+				</p>		
+				<p><strong>Bugs, issues, requests</strong> can be added at <a href="https://github.com/fjenett/sql-library-processing/issues">located Github.</a>
+				</p>	
 			</div>
 	
 			<br class="clear" />
 			
 			<div id="examples">
-			<h2>examples</h2>
-			<p>
-			find a list of examples in the current distribution of ##yourLibrary##, or have a look at them by following the links below.
-			<ul>
-				##examples##
-			</ul>
-			</p>
+				<h2>Examples</h2>
+				<p>
+				find a list of examples in the current distribution of ##yourLibrary##, or have a look at them by following the links below.
+				<ul>
+					##examples##
+				</ul>
+				</p>
 			</div>
 			
 			<div id="info">
-			<h2>tested</h2>
-			<p>
-<!-- on which platform has the library been tested? -->
-			<strong>platform</strong> osx
-			
-<!-- which processing version did you use for testing your library? -->
-			<br /><strong>processing</strong> 1.0 (016x) – 1.5
-			
-<!-- does your library depend on any other library or framework? -->
-			<br /><strong>dependencies</strong> mysql, sqlite and postgresql jdbc drivers (all included)
-			</p>
+			<h2>Tested on ...</h2>
+				<p>
+				<strong>Platform</strong> osx
+				<br />
+				
+				<strong>Processing</strong> 2.0b
+				<br />
+				
+				<strong>Dependencies</strong> mysql, sqlite and postgresql jdbc drivers (all included)
+				</p>
 			</div>
 			
 			<br class="clear" />
 			
-<!-- use the demos section for a list of applets run in a browser. -->
 			<div id="demos">
-				<h2>demos</h2>
+				<h2>Used in:</h2>
 				<p>
-				You've built something nice with this lib? Mail me the link and i'm happy to "add" you to "the list below".
-				<!--ul>
-					<li><a href="./applets/demo/index.html">demo</a></li>
-				</ul-->
+				<ul>
+					<li><a href="http://feltron.com/">Nicholas Felton biennal / annual reports</a>, see <a href="https://vimeo.com/45838408?t=23:16">here</a></li>
+					<li><a href="http://visualizing-europe.eu/visualizingeurope/bolzplatz/">Bolzplatz</a> by <a href="http://www.denis-klein.de/">Denis Klein</a></li>
+				</ul>
+				<br />
+				Have an example this library in use? ... <a href="https://github.com/fjenett/sql-library-processing">contact me!</a>
 				</p>
 			</div>
 
 			
 			<br class="clear" />
 			
-<!-- use the misc section to for other relevant information. activate the link to the misc section in the menu above. -->
 			<div id="misc">
 			<p></p>
 			</div>
@@ -155,10 +153,12 @@
 		</div>
 		
 		<div id="footer">
-		by ##author##, 2008–2011. &nbsp;|&nbsp; 
-		included jdbc drives are available from <a href="http://www.mysql.com/products/connector/j/">MySQL AB</a>, <a href="http://www.zentus.com/sqlitejdbc/">David Crawshaw</a> and <a>PostgreSQL 
-	</a>.
+			by ##author##, 2008–today. &nbsp;|&nbsp; 
+			included jdbc drives are available from <a href="http://www.mysql.com/products/connector/j/">MySQL AB</a>, <a href="http://www.zentus.com/sqlitejdbc/">David Crawshaw</a> and <a>PostgreSQL</a>.
 		</div>
 	</div>
+
+	<a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	
 </body>
 </html>

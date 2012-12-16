@@ -1,8 +1,8 @@
-name = SQLibrary
+name = BezierSQLib
 authorList = [Florian Jenett](http://www.bezier.de/)
-url = https://github.com/fjenett/sqlibrary
+url = https://github.com/fjenett/sql-library-processing
 category = DATA
 sentence = A library to facilitate communication with SQL-based databases
 paragraph =  SQLibrary is an interface to MySQL, SQLite and PostgreSQL databases
-version = 1021
+version = 1103
 prettyVersion = 0.2.0

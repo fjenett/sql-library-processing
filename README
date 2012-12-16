@@ -13,7 +13,7 @@ since v0.2.0 that makes it easier to load and save objects to a database.
     insertUpdateIntoDatabase(table, columns, values)
 
 See:
-https://github.com/fjenett/sqlibrary/blob/master/src/de/bezier/data/sql/SQL.java
+https://raw.github.com/fjenett/sql-library-processing/master/src/de/bezier/data/sql/SQL.java
 
 --------------------------------------------------------------------------------
 
@@ -37,5 +37,9 @@ sqlitejdbc-v036-nested.jar
 sqlitejdbc-v053-pure.jar
 http://www.zentus.com/sqlitejdbc/
 BSD, http://www.zentus.com/sqlitejdbc/license.html
+    
+--------------------------------------------------------------------------------
+
+https://github.com/fjenett/sql-library-processing
 
 --------------------------------------------------------------------------------

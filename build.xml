@@ -1,8 +1,7 @@
 <project name="BezierSQLib" default="install" basedir="./">
     
 	<description>
-		BezierSQLib (formerly SQLibrary) build file, based on Processing
-		libraries build file.
+		BezierSQLib (formerly SQLibrary) build file, based on Processing libraries build file.
 	</description>
 	
 	<target name="settings">
@@ -155,9 +154,11 @@ java version		${javaVersion}
 			<fileset file="readme.md" />
 		</copy>
 		<replaceregexp file="${dist}/library.properties" flags="g"
+  					   match="@@LIBRARY_NAME@@" replace="${libraryName}" />
+		<replaceregexp file="${dist}/library.properties" flags="g"
   					   match="@@VERSION@@" replace="${build.number}" />
 		<replaceregexp file="${dist}/library.properties" flags="g"
-  					   match="@@PRETTYVERSION@@" replace="${versionNumber}" />
+  					   match="@@PRETTY_VERSION@@" replace="${versionNumber}" />
 
 	  	<!-- zip the distribution of the library -->
 	  	<zip destfile="releases/${libraryName}-${versionNumber}.zip"
