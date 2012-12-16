@@ -1,7 +1,7 @@
-<project name="SQLibrary" default="build" basedir="./">
+<project name="BezierSQLib" default="build" basedir="./">
     
 	<description>
-		SQLibrary build file, based on Processing
+		BezierSQLib (formerly SQLibrary) build file, based on Processing
 		libraries build file.
 	</description>
 	
@@ -10,20 +10,23 @@
 	<!-- == Change these two for building == -->
 	
 	<!-- Change to point to Processings library folder (core.jar, etc) -->
-	<property name="libraryClasspath"  location="/Applications/Processing.app/Contents/Resources/Java/"/>
+	<property name="libraryClasspath"  
+			  location="/Applications/Processing.app/Contents/Resources/Java/"/>
+	<property name="processing.classes" 
+			  location="/Users/fjenett/Repos/processing/processing/build/macosx/work/Processing.app/Contents/Resources/Java/" />
 	
 	<!-- Change to point to your user libraries folder inside your sketchbook -->
 	<property name="processing" location="/Users/fjenett/Documents/Processing/libraries"/>	
 	
 	<!-- No changes or adjustments required below -->
 
-	<property name="author" value="Florian Jenett"/>
-	<property name="copyright" value="(c) 2005 - 2012"/>
-	<property name="libraryName"  value="SQLibrary"/>
+	<property name="author" 		value="Florian Jenett"/>
+	<property name="copyright" 		value="(c) 2005 - 2012"/>
+	<property name="libraryName"  	value="BezierSQLib"/>
 	<property name="versionNumber"  value="0.2.0"/>
-	<property name="yourLink"  value="http://bezier.de/" />
-	<property name="keywords" value="MySQL, SQLite, PostgreSQL, SQL, database"/>
-	<property name="javaVersion" value="1.5"/>
+	<property name="yourLink"  		value="http://bezier.de/" />
+	<property name="keywords" 		value="MySQL, SQLite, PostgreSQL, SQL, database"/>
+	<property name="javaVersion" 	value="1.5"/>
 	
 	<path id="library-classes-add">
 		<fileset dir="lib">
@@ -32,9 +35,10 @@
 			<include name="postgresql-8.3-604.jdbc3.jar"/> <!-- PostgreSQL -->
 		</fileset>
 	</path>
+	
 	<path id="library-classpath">
-		<fileset dir="${libraryClasspath}" >
-			<include name="core.jar"/>
+		<fileset dir="${processing.classes}" >
+			<include name="core/library/core.jar"/>
 		</fileset>
 		<path refid="library-classes-add" />
 	</path>
@@ -54,7 +58,7 @@
 Properties initialized.
 src path		${src}
 bin path 		${bin}
-libraryClasspath	${libraryClasspath}
+Processing classes	${processing.classes}
 processing Libraries	${processing}
 java version		${javaVersion}
 </echo>
@@ -110,13 +114,13 @@ java version		${javaVersion}
   	
 	<!-- create the java documentation of the library -->
  	<mkdir dir="${javadoc}" />
- 	<javadoc bottom="processing library ${libraryName} by ${author}. ${copyright}"
+ 	<javadoc bottom="Processing library ${libraryName} (formerly SQLibrary) by ${author}. ${copyright}"
 			 destdir="${javadoc}" 
 			 verbose="false" 
 			 stylesheetfile="resources/stylesheet.css" 
 			 doctitle="Javadocs: ${libraryName}" 
 			 public="true" version="false" 
-			 windowtitle="Javadocs: ${libraryName}">
+			 windowtitle="Javadocs: ${libraryName} (formerly SQLibrary)">
  		<fileset dir="${src}" defaultexcludes="yes">
 			<include name="**/*"/>
 		</fileset>

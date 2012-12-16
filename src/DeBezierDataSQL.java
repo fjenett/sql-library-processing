@@ -37,7 +37,10 @@ public class DeBezierDataSQL
 				if (db.getDebug()) e.printStackTrace();
 			}
 			if ( val == null ) {
-				if (db.getDebug()) System.err.println( "setFromRow(): Value is null" );
+				if (db.getDebug()) {
+					System.err.println( "setFromRow(): Value is null" );
+					System.err.println( colName );
+				}
 				continue; // TODO warn here?
 			}
 			

@@ -1018,6 +1018,15 @@ abstract public class SQL
 		}
 	}
 	
+	
+	/**
+	 *	Escape ...
+	 */
+	public String escape ( Object o )
+	{
+		return "\"" + o + "\"";
+	}
+	
 	/**
 	 *	Set the current NameMapper
 	 *
@@ -1164,9 +1173,9 @@ abstract public class SQL
 	 *	get fields and getters from object and pass that on to
 	 *	insertUpdateIntoDatabase(table, columns, values).
 	 *
-	 *	@param Object object The object to save to db
+	 *	@param object Object The object to save to db
 	 *
-	 *  @see insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
+	 *  @see #insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
 	 */
 	public void saveToDatabase ( Object object )
 	{
@@ -1212,10 +1221,10 @@ abstract public class SQL
 	 *	the values are fetched from the object all is passed to 
 	 *	insertUpdateIntoDatabase().
 	 *
-	 * @param String tableName The name of the table
-	 * @param Object object The object to look at
+	 * @param tableName String The name of the table
+	 * @param object Object The object to look at
 	 *
-	 * @see insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
+	 * @see #insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])
 	 */
 	public void saveToDatabase ( String tableName, Object object )
 	{
@@ -1340,9 +1349,9 @@ abstract public class SQL
 	 *	Insert or update a bunch of values in the database. If the given table has a 
 	 *	primary key the entry will be updated if it already existed.
 	 *
-	 *	@param String tableName The name of the table
-	 *	@param String[] columnNames The names of the columns to fill or update
-	 *	@param Object[] values The values to instert or update
+	 *	@param tableName String The name of the table
+	 *	@param columnNames String[] The names of the columns to fill or update
+	 *	@param values Object[] The values to instert or update
 	 */
 	public void insertUpdateInDatabase ( String tableName, String[] columnNames, Object[] values )
 	{
