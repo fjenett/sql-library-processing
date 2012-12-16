@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<!-- 
+	(1) replace the following placeholders:
+	BezierSQLib with the name of your library
+	Florian Jenett with your name
+	12/16/2012 with the current date
+	0.2.0 with the current version number of your library.
+	http://bezier.de/ to this page or your homepage.
+	
+	(2) make adjustments to any item below where necessary.
+-->
+
+<title>BezierSQLib</title>
+<meta name="description" content="a library for the programming environment processing" />
+<meta name="keywords" content="Florian Jenett, BezierSQLib, MySQL, SQLite, PostgreSQL, SQL, database" />
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en-us" />
+<meta name="ROBOTS" content="index,follow,archive" />
+<meta http-equiv="imagetoolbar" content="false" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="author" content="Florian Jenett" />
+<meta name="Rating" content="General" />
+<meta name="revisit-after" content="7 Days" />
+<meta name="doc-class" content="Living Document" />
+<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+</head>
+<body>
+	<div id="container">
+	
+		<div id="header">
+			<h1>BezierSQLib</h1>
+			<p>by <a href="#http://bezier.de/">Florian Jenett</a></p>
+		</div>
+		<br class="clear" />
+		<div id="menu">
+			<ul>
+				<li><a href="#about">About</a> \ </li>
+				<li><a href="#download">Download</a> \ </li>
+				<li><a href="#download">Installation</a> \ </li>
+				<li><a href="#examples">Examples</a> \ </li>
+				<!-- <li><a href="#demos">Demos</a> \ </li> -->				
+				<!-- <li><a href="#misc">Misc</a> \ </li> -->
+				<li><a href="./documentation" target="_blank">Documentation</a></li>
+			</ul>
+		</div>
+		
+		<br class="clear" />
+		
+		<div id="content" class="clear" style="margin-top:40px;">
+			
+			<div id="about">
+			<h2>BezierSQLib.</h2>
+			<p>
+			a library for the programming environment <a href="http://www.processing.org" target="_blank">processing</a>.<br />
+			last update, 12/16/2012.
+			</p>
+			<p>
+			SQLibrary lets you communicate with a MySQL, PostgreSQL or SQLite database.
+			</p>
+			<p>
+				<em>please note: working with a remote database in a plublicly accessible applet is highly insecure.</em>
+			</p>
+			</div>
+			
+			
+			<br class="clear" />
+			
+			<div id="download">
+			<h2>download</h2>
+			<p>
+			download BezierSQLib version 0.2.0 in <a href="./download/BezierSQLib-0.2.0.zip">.zip format</a>
+			</p>
+			<h2>installation</h2>
+			<p>
+			before trying to use this library with any database make sure you have that up and running. 
+			the library is just a wrapper to help connect to <em>already installed and running</em> databases (MySQL, SQLite, PostgreSQL).
+			</p>
+			<p>
+			installing the library itself:
+			<ul>
+				<li>quit processing</li>
+				<li>find your <em>sketchbook</em> folder, <a href="http://www.processing.org/reference/environment/#Sketchbook" >see second paragraph here</a></li>
+				<li>add a folder called <em>libraries</em> (lowercase) to your sketchbook if its not already there</li>
+				<li>move the <em>BezierSQLib-0.2.0.zip</em> into that <em>libraries</em> folder</li>
+				<li>unzip it in place</li>
+				<li>rename it to <em>BezierSQLib</em></li>
+				<li>start processing and run one of the included examples to see if the lib is working</li>
+			</ul>
+			</p>
+			</div>	
+			
+			
+			<div id="resources">
+			<p><strong>keywords</strong>
+			MySQL, SQLite, PostgreSQL, SQL, database
+			</p>
+			<p><strong>documentation</strong>. have a look at the online documentation <a href="./documentation/index.html" target="_blank">here</a>. a copy of the documentation is included in the .zip as well.
+			</p>		
+			<p><strong>source</strong>. the source code is included in the download.
+			</p>			
+			</div>
+	
+			<br class="clear" />
+			
+			<div id="examples">
+			<h2>examples</h2>
+			<p>
+			find a list of examples in the current distribution of BezierSQLib, or have a look at them by following the links below.
+			<ul>
+				<li><a href="examples/MySQL_example1.zip">MySQL_example1</a></li> <li><a href="examples/MySQL_example2.zip">MySQL_example2</a></li> <li><a href="examples/MySQL_example3.zip">MySQL_example3</a></li> <li><a href="examples/MySQL_timestamp.zip">MySQL_timestamp</a></li> <li><a href="examples/PostgreSQL_example1.zip">PostgreSQL_example1</a></li> <li><a href="examples/SQLite_example1.zip">SQLite_example1</a></li> <li><a href="examples/SQLite_example2.zip">SQLite_example2</a></li> 
+			</ul>
+			</p>
+			</div>
+			
+			<div id="info">
+			<h2>tested</h2>
+			<p>
+<!-- on which platform has the library been tested? -->
+			<strong>platform</strong> osx
+			
+<!-- which processing version did you use for testing your library? -->
+			<br /><strong>processing</strong> 1.0 (016x) – 1.5
+			
+<!-- does your library depend on any other library or framework? -->
+			<br /><strong>dependencies</strong> mysql, sqlite and postgresql jdbc drivers (all included)
+			</p>
+			</div>
+			
+			<br class="clear" />
+			
+<!-- use the demos section for a list of applets run in a browser. -->
+			<div id="demos">
+				<h2>demos</h2>
+				<p>
+				You've built something nice with this lib? Mail me the link and i'm happy to "add" you to "the list below".
+				<!--ul>
+					<li><a href="./applets/demo/index.html">demo</a></li>
+				</ul-->
+				</p>
+			</div>
+
+			
+			<br class="clear" />
+			
+<!-- use the misc section to for other relevant information. activate the link to the misc section in the menu above. -->
+			<div id="misc">
+			<p></p>
+			</div>
+			
+			<br class="clear" />
+			
+		</div>
+		
+		<div id="footer">
+		by Florian Jenett, 2008–2011. &nbsp;|&nbsp; 
+		included jdbc drives are available from <a href="http://www.mysql.com/products/connector/j/">MySQL AB</a>, <a href="http://www.zentus.com/sqlitejdbc/">David Crawshaw</a> and <a>PostgreSQL 
+	</a>.
+		</div>
+	</div>
+</body>
+</html>
