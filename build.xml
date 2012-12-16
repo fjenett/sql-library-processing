@@ -51,7 +51,7 @@
 	<property name="javadoc" 	location="documentation"/>
 	<property name="dist" 		location="distribution"/>
 	<property name="build" 		location="build"/>
-	<property name="web" 		location="website" /> 
+	<property name="web" 		location="../sql-website" /> 
 
 	</target>
 	

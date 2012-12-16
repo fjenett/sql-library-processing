@@ -1,41 +1,41 @@
 --------------------------------------------------------------------------------
 
-    SQLibrary, a Processing library that wraps around JDBC drivers to let
-    you access MySQL, SQLite and PostgreSQL databases
+SQLibrary, a Processing library that wraps around JDBC drivers to let
+you access MySQL, SQLite and PostgreSQL databases
     
 --------------------------------------------------------------------------------
 
-    It's not an ORM (and will not become one) but it has some handy features
-    since v0.2.0 that makes it easier to load and save objects to a database.
-    
+It's not an ORM (and will not become one) but it has some handy features
+since v0.2.0 that makes it easier to load and save objects to a database.
+
     setFromRow(object)
     saveToDatabase(object)
     insertUpdateIntoDatabase(table, columns, values)
-    
-    See:
-    https://github.com/fjenett/sqlibrary/blob/master/src/de/bezier/data/sql/SQL.java
+
+See:
+https://github.com/fjenett/sqlibrary/blob/master/src/de/bezier/data/sql/SQL.java
 
 --------------------------------------------------------------------------------
 
-    Parts of this library are available under their own licenses. These are
-    redistributed as downloaded from the original sources:
-    
-    MySQL Connector/J (JDBC driver)
-    mysql-connector-java-3.1.8-bin.jar
-    http://dev.mysql.com/downloads/connector/j/
-    http://dev.mysql.com/downloads/connector/j/3.1.html
-    GPL, http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-    
-    PostgreSQL JDBC driver
-    postgresql-8.3-604.jdbc3.jar
-    http://jdbc.postgresql.org/
-    http://jdbc.postgresql.org/download.html
-    BSD, http://jdbc.postgresql.org/license.html
-    
-    SQLite JDBC driver
-    sqlitejdbc-v036-nested.jar
-    sqlitejdbc-v053-pure.jar
-    http://www.zentus.com/sqlitejdbc/
-    BSD, http://www.zentus.com/sqlitejdbc/license.html
+Parts of this library are available under their own licenses. These are
+redistributed as downloaded from the original sources:
+
+MySQL Connector/J (JDBC driver)
+mysql-connector-java-3.1.8-bin.jar
+http://dev.mysql.com/downloads/connector/j/
+http://dev.mysql.com/downloads/connector/j/3.1.html
+GPL, http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+PostgreSQL JDBC driver
+postgresql-8.3-604.jdbc3.jar
+http://jdbc.postgresql.org/
+http://jdbc.postgresql.org/download.html
+BSD, http://jdbc.postgresql.org/license.html
+
+SQLite JDBC driver
+sqlitejdbc-v036-nested.jar
+sqlitejdbc-v053-pure.jar
+http://www.zentus.com/sqlitejdbc/
+BSD, http://www.zentus.com/sqlitejdbc/license.html
 
 --------------------------------------------------------------------------------
