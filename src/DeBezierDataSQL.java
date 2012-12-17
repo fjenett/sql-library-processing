@@ -5,8 +5,15 @@ import de.bezier.data.sql.mapper.*;
 import java.lang.reflect.*;
 
 /**
- *	In Java classes in a package can not gain access to
- *  classes outside any package through reflection.
+ *	Java classes in a package can not gain access to
+ *  classes outside any package through Java's reflection.
+ *
+ *	This class is a helper that can access other unpackaged
+ *	classes (as Processing sketches are).
+ *
+ *	de.bezier.data.SQL &lt;-&gt; DeBezierDataSQL &lt;-&gt; _unpackaged_class_
+ *
+ *	fjenett 2011
  */
 
 public class DeBezierDataSQL
