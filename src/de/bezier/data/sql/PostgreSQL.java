@@ -4,7 +4,7 @@ import processing.core.*;
 import java.util.ArrayList;
 
 /**
- *		PostgreSQL wrapper for SQL library for Processing 1+
+ *		PostgreSQL wrapper for SQL library for Processing 2+
  *		<p>
  *		This is a wrapper around some of sun's java.sql.* classes
  *		and the "org.postgresql.Driver" driver by postgresql.org (BSD).

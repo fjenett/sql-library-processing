@@ -4,7 +4,7 @@ import processing.core.*;
 import java.util.ArrayList;
 
 /**
- *		MySQL wrapper for SQL library for Processing 1+
+ *		MySQL wrapper for SQL library for Processing 2+
  *		<p>
  *		A wrapper around some of sun's java.sql.* classes
  *		and the "com.mysql.jdbc.Driver" driver by mysql.com (GPL).

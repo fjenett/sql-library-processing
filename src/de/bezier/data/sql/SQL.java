@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.ArrayList;
 
 /**
- *		<h1>SQL library for Processing 1+</h1>
+ *		<h1>SQL library for Processing 2+</h1>
  *
  *		Since v 0.2.0 it has some ORM like features, see 
  *		<ul>
@@ -30,7 +30,7 @@ import java.util.ArrayList;
  *		@author 		Florian Jenett - mail@florianjenett.de
  *
  *		created:		07.05.2005 - 12:46 Uhr
- *		modified:		fjenett 2012-02
+ *		modified:		fjenett 20121217
  */
 
 abstract public class SQL
@@ -44,6 +44,9 @@ abstract public class SQL
 	protected String pass;
 	public String driver = "";
 	public String type = "";
+
+	private int driverMinorVersion = -1;
+	private int driverMajorVersion = -1;
 	
 	public java.sql.Connection connection;
 	public String previousQuery;
@@ -70,6 +73,7 @@ abstract public class SQL
 		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
 	
+
 	/**
 	 *	You should not directly use the SQL.class instead use the classes for your database type.
 	 */
@@ -131,6 +135,7 @@ abstract public class SQL
 		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
 	
+
 	/**
 	 *	Turn some debugging on/off.
 	 *
@@ -141,11 +146,18 @@ abstract public class SQL
 		DEBUG = yesNo;
 	}
 	
+
+	/**
+	 *	Get current debugging setting
+	 *
+	 *	@param 	yesNo	Turn it on or off
+	 */
 	public boolean getDebug ()
 	{
 		return DEBUG;
 	}
 	
+
 	/**
 	 *	Open the database connection with the parameters given in the contructor.
 	 */
@@ -183,8 +195,38 @@ abstract public class SQL
 		}
 		
 		getTableNames();
+
+		try {
+			Driver jdbcDriver = java.sql.DriverManager.getDriver( url );
+			if ( jdbcDriver != null ) {
+				driverMinorVersion = jdbcDriver.getMinorVersion();
+				driverMajorVersion = jdbcDriver.getMajorVersion();
+
+				if ( DEBUG ) System.out.println( "Using driver " + getDriverVersion() );
+			}
+		} catch ( SQLException sqle ) {
+			sqle.printStackTrace();
+		}
 		
 		return true;
+	}
+
+
+	/**
+	 *	Return the version of the currently active JDBC driver
+	 *
+	 *	@return String The version of the current driver
+	 */
+	public String getDriverVersion ()
+	{
+		if ( connection == null ) {
+			System.out.println( "SQL.getDriverVersion(): you need to connect() first" );
+			return null;
+		} else if ( driver == null || driver.equals("") ) {
+			System.out.println( "SQL.getDriverVersion(): no driver specified ... or it is null" );
+			return null;
+		}
+		return driver + " " + driverMajorVersion + "." + driverMinorVersion;
 	}
 	
 	private void preQueryOrExecute () 
@@ -192,6 +234,7 @@ abstract public class SQL
 		result = null;
 	}
 	
+
 	/**
 	 *	Execute a SQL command on the open database connection.
 	 *
@@ -203,6 +246,7 @@ abstract public class SQL
 		
 		query( _sql, false );
 	}
+
 
 	/**
 	 *	Execute a SQL command on the open database connection. 
@@ -285,7 +329,7 @@ abstract public class SQL
 			ex.printStackTrace();
 			return;
 		}
-		
+
 		String sql2 = null;
 		try {
 			sql2 = (String)meth.invoke( null, _sql, args );
@@ -296,6 +340,7 @@ abstract public class SQL
 		queryOrExecute( sql2, true );
 	}
 	
+
 	/**
 	 *	Query implemenbtation called by execute() / query()
 	 */
@@ -333,6 +378,7 @@ abstract public class SQL
 		}
 	}
 	
+
 	/**
 	 *	Check if more results (rows) are available. This needs to be called before any results can be retrieved.
 	 *
@@ -353,11 +399,12 @@ abstract public class SQL
 		catch ( java.sql.SQLException e )
 		{
 			System.out.println( "SQL.next(): java.sql.SQLException.\r" );
-			if (DEBUG) e.printStackTrace();
+			if ( DEBUG ) e.printStackTrace();
 		}
 		return false;
 	}
 	
+
 	/**
 	 *	Get names of available tables in active database,
 	 *	needs to be implemented per db adapter.
@@ -366,6 +413,7 @@ abstract public class SQL
 	 */
 	abstract public String[] getTableNames ();
 	
+
 	/**
 	 *	Returns an array with the column names of the last request.
 	 *
@@ -415,6 +463,7 @@ abstract public class SQL
 		return colNames;
 	}
 	
+
 	/**
 	 *	Get connection. ... in case you want to do JDBC stuff directly.
 	 *
@@ -425,6 +474,7 @@ abstract public class SQL
 		return connection;
 	}
 	
+
 	/**
 	 *	Read an integer value from the specified field.
 	 *	Represents an INT / INTEGER type:
@@ -457,7 +507,15 @@ abstract public class SQL
 		return 0;
 	}
 	
-	
+	/**
+	 *	Read an integer value from the specified field.
+	 *	Represents an INT / INTEGER type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field to read
+	 *	@return	int	Value of the field or 0
+	 */
 	public int getInt ( int _column )
 	{
 		if ( result == null )
@@ -478,6 +536,7 @@ abstract public class SQL
 		return 0;
 	}
 	
+
 	/**
 	 *	Read a long value from the specified field.
 	 *	Represents a BIGINT type:
@@ -507,6 +566,16 @@ abstract public class SQL
 		return 0;
 	}
 	
+	
+	/**
+	 *	Read a long value from the specified field.
+	 *	Represents a BIGINT type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	long	Value of the field or 0
+	 */
 	public long getLong ( int _column )
 	{
 		if ( result == null )
@@ -527,6 +596,7 @@ abstract public class SQL
 		return 0;
 	}
 	
+
 	/**
 	 *	Read a float value from the specified field.
 	 *	Represents a REAL type:
@@ -555,7 +625,17 @@ abstract public class SQL
 		}
 		return 0.0f;
 	}
-	
+
+
+	/**
+	 *	Read a float value from the specified field.
+	 *	Represents a REAL type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The index of the column of the field
+	 *	@return	float	Value of the field or 0
+	 */
 	public float getFloat ( int _column )
 	{
 		if ( result == null )
@@ -605,7 +685,17 @@ abstract public class SQL
 		}
 		return 0.0;
 	}
-	
+
+
+	/**
+	 *	Read a double value from the specified field.
+	 *	Represents FLOAT and DOUBLE types:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	double	Value of the field or 0
+	 */
 	public double getDouble ( int _column )
 	{
 		if ( result == null )
@@ -655,7 +745,17 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
+
+	/**
+	 *	Read a java.math.BigDecimal value from the specified field.
+	 *	Represents DECIMAL and NUMERIC types:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	java.math.BigDecimal	Value of the field or null
+	 */
 	public java.math.BigDecimal getBigDecimal ( int _column )
 	{
 		if ( result == null )
@@ -706,6 +806,16 @@ abstract public class SQL
 		return false;
 	}
 	
+
+	/**
+	 *	Read a boolean value from the specified field.
+	 *	Represents BIT type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	boolean	Value of the field or 0
+	 */
 	public boolean getBoolean ( int _column )
 	{
 		if ( result == null )
@@ -755,7 +865,16 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
+	/**
+	 *	Read a String value from the specified field.
+	 *	Represents VARCHAR and CHAR types:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	String	Value of the field or null
+	 */
 	public String getString ( int _column )
 	{
 		if ( result == null )
@@ -775,7 +894,6 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
 	
 	/**
 	 *	Read a java.sql.Date value from the specified field.
@@ -806,6 +924,16 @@ abstract public class SQL
 		return null;
 	}
 	
+
+	/**
+	 *	Read a java.sql.Date value from the specified field.
+	 *	Represents DATE type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	java.sql.Date	Value of the field or null
+	 */
 	public java.sql.Date getDate ( int _column )
 	{
 		if ( result == null )
@@ -856,6 +984,16 @@ abstract public class SQL
 		return null;
 	}
 	
+
+	/**
+	 *	Read a java.sql.Time value from the specified field.
+	 *	Represents TIME type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	java.sql.Time	Value of the field or null
+	 */
 	public java.sql.Time getTime ( int _column )
 	{
 		if ( result == null )
@@ -906,6 +1044,16 @@ abstract public class SQL
 		return null;
 	}
 	
+
+	/**
+	 *	Read a java.sql.Timestamp value from the specified field.
+	 *	Represents TIMESTAMP type:
+	 *	http://java.sun.com/j2se/1.3/docs/guide/jdbc/getstart/mapping.html
+	 *	"8.9.6	Conversions by ResultSet.getXXX Methods"
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	java.sql.Timestamp	Value of the field or null
+	 */
 	public java.sql.Timestamp getTimestamp ( int _column )
 	{
 		if ( result == null )
@@ -953,6 +1101,13 @@ abstract public class SQL
 		return null;
 	}
 	
+
+	/**
+	 *	Read a value from the specified field to hav it returned as an object.
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	Object	Value of the field or null
+	 */
 	public Object getObject ( int _column )
 	{
 		if ( result == null )
@@ -973,6 +1128,7 @@ abstract public class SQL
 		return null;
 	}
 
+
 	/**
 	 *	Close the database connection
 	 */
@@ -984,6 +1140,8 @@ abstract public class SQL
 	
 	/**
 	 *	Callback function for PApplet.registerDispose()
+	 *
+	 *	@see processing.core.PApplet.registerDispose(java.lang.Object)
 	 */
 	public void dispose ()
 	{
@@ -1021,15 +1179,19 @@ abstract public class SQL
 		}
 	}
 	
-	
+
 	/**
-	 *	Escape ...
+	 *	Generate an escaped String for a given Object
+	 *
+	 *	@param object the Object to escape
+	 *	@return String the ecaped String representation of the Object
 	 */
 	public String escape ( Object o )
 	{
-		return "\"" + o + "\"";
+		return "\"" + o.toString().replaceAll("\"","\\\"") + "\"";
 	}
 	
+
 	/**
 	 *	Set the current NameMapper
 	 *
@@ -1041,6 +1203,7 @@ abstract public class SQL
 		this.mapper = mapper;
 	}
 	
+
 	/**
 	 *	Get the current NameMapper
 	 *
@@ -1051,6 +1214,7 @@ abstract public class SQL
 		return mapper;
 	}
 	
+
 	/**
 	 *	<p>Highly experimental ...<br />
 	 *	tries to map column names to public fields or setter methods 
@@ -1129,6 +1293,7 @@ abstract public class SQL
 		}
 	}
 	
+
 	/**
 	 *	Convert a field name to a setter name: fieldName -> setFieldName().
 	 */
@@ -1138,6 +1303,7 @@ abstract public class SQL
 		if ( name.length() == 0 ) return null;
 		return "set" + name.substring(0,1).toUpperCase() + name.substring(1);
 	}
+
 
 	/**
 	 *	Convert a field name to a getter name: fieldName -> getFieldName().
@@ -1149,6 +1315,7 @@ abstract public class SQL
 		return "get" + name.substring(0,1).toUpperCase() + name.substring(1);
 	}
 	
+
 	/**
 	 *	Set a table name for a class.
 	 */
@@ -1171,6 +1338,7 @@ abstract public class SQL
 		));
 	}
 	
+
 	/**
 	 *	Take an object, try to find table name from object name (or look it up),
 	 *	get fields and getters from object and pass that on to
@@ -1218,6 +1386,7 @@ abstract public class SQL
 		}
 	}
 	
+
 	/**
 	 *	Takes a table name and an object and tries to construct a set of
 	 *	columns names from fields and getters found in the object. After
@@ -1348,6 +1517,7 @@ abstract public class SQL
 		}
 	}
 	
+
 	/**
 	 *	Insert or update a bunch of values in the database. If the given table has a 
 	 *	primary key the entry will be updated if it already existed.

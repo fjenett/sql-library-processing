@@ -4,14 +4,14 @@ import processing.core.*;
 import java.util.ArrayList;
 
 /**
- *		SQLite wrapper for SQL library for Processing 1+
+ *		SQLite wrapper for SQL library for Processing 2+
  *		<p>
  *		A wrapper around some of sun's java.sql.* classes
- *		and the pure java "org.sqlite.JDBC" driver by zentus.com (BSD).
+ *		and the pure java "org.sqlite.JDBC" driver of the Xerial project (Apache 2 license).
  *		</p>
  *		see:<ul>
- *			<li>http://www.zentus.com/sqlitejdbc/</li>
- *			<li>http://files.zentus.com/sqlitejdbc/</li>
+ *			<li>http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC</li>
+ *			<li>http://www.xerial.org/maven/repository/site/xerial-project/sqlite-jdbc/apidocs/index.html?index-all.html</li>
  *			<li>http://java.sun.com/products/jdbc/</li>
  *		</ul>
  *
@@ -19,7 +19,7 @@ import java.util.ArrayList;
  *		@author 		Florian Jenett - mail@florianjenett.de
  *
  *		created:		2008-11-29 12:15:15 - fjenett
- *		modified:		2012-02
+ *		modified:		fjenett 20121217
  *
  */
 
