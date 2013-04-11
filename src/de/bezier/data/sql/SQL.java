@@ -1076,7 +1076,63 @@ abstract public class SQL
 	
 	
 	/**
-	 *	Read a value from the specified field to hav it returned as an object.
+	 *	Read a value from the specified field to have it returned as an byte[]
+	 *
+	 *	@param	_field	The name of the field
+	 *	@return	byte[]	byte array representing a blob
+	 */
+	public byte[] getBlob ( String _field )
+	{
+		if ( result == null )
+		{
+			System.out.println( "SQL.getBlob(): You need to query() something first." );
+			return null;
+		}
+		
+		try
+		{
+			Blob blob = result.getBlob( _field );
+			return blob.getBytes(1,(int)blob.length());
+		}
+		catch ( java.sql.SQLException e )
+		{
+			System.out.println( "SQL.getObject(): java.sql.SQLException.\r" );
+			if (DEBUG) e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 *	Read a value from the specified field to have it returned as an byte[]
+	 *
+	 *	@param	_column	The column index of the field
+	 *	@return	byte[]	byte array representing a blob
+	 */
+	public byte[] getBlob ( int _column )
+	{
+		if ( result == null )
+		{
+			System.out.println( "SQL.getBlob(): You need to query() something first." );
+			return null;
+		}
+		
+		try
+		{
+			Blob blob = result.getBlob( _column );
+			return blob.getBytes(1,(int)blob.length());
+		}
+		catch ( java.sql.SQLException e )
+		{
+			System.out.println( "SQL.getObject(): java.sql.SQLException.\r" );
+			if (DEBUG) e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 *	Read a value from the specified field to have it returned as an object.
 	 *
 	 *	@param	_field	The name of the field
 	 *	@return	Object	Value of the field or null
@@ -1103,7 +1159,7 @@ abstract public class SQL
 	
 
 	/**
-	 *	Read a value from the specified field to hav it returned as an object.
+	 *	Read a value from the specified field to have it returned as an object.
 	 *
 	 *	@param	_column	The column index of the field
 	 *	@return	Object	Value of the field or null

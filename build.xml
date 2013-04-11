@@ -12,7 +12,7 @@
 	<property name="libraryClasspath"  
 			  location="/Applications/Processing.app/Contents/Resources/Java/"/>
 	<property name="processing.classes" 
-			  location="/Users/fjenett/Repos/processing/processing/build/macosx/work/Processing.app/Contents/Resources/Java/" />
+			  location="/Users/fjenett/Repos/processing/build/macosx/work/Processing.app/Contents/Resources/Java/" />
 	
 	<!-- Change to point to your user libraries folder inside your sketchbook -->
 	<property name="processing" location="/Users/fjenett/Documents/Processing/libraries"/>	
@@ -48,7 +48,7 @@
 	<property name="src" 		location="src"/>
 	<property name="bin" 		location="bin"/>
 	<property name="javadoc" 	location="documentation"/>
-	<property name="dist" 		location="distribution"/>
+	<property name="dist" 		value="${libraryName}"/>
 	<property name="build" 		location="build"/>
 	<property name="web" 		location="../sql-website" /> 
 
@@ -161,10 +161,11 @@ java version		${javaVersion}
   					   match="@@PRETTY_VERSION@@" replace="${versionNumber}" />
 
 	  	<!-- zip the distribution of the library -->
-	  	<zip destfile="releases/${libraryName}-${versionNumber}.zip"
-	  	       basedir="${dist}"
-	  	       excludes="**/_DS.Store"
-		/>
+	  	<zip destfile="releases/${libraryName}-${versionNumber}.zip">
+	  		<zipfileset dir="">
+				<include name="${dist}/**/**" />
+			</zipfileset>
+	  	</zip>
 
 		<!-- library contribution system -->
 		<mkdir dir="release" />
@@ -194,9 +195,9 @@ java version		${javaVersion}
 
 
  	<!-- + + + + + + + + + + + + + + + + + + + + + + +
-		PACKAGE for web
+		RELEASE
 	 + + + + + + + + + + + + + + + + + + + + + + + -->
-	<target name="website" depends="install">
+	<target name="release" depends="install">
 
 	  	<mkdir dir="${web}" />
 	  	<move todir="${web}/documentation">
@@ -295,7 +296,7 @@ java version		${javaVersion}
 	<target name="addExamples" depends="settings">
 		<property name="exampleZipped" value="${exampleDir}.zip"/>
 		
-		<zip 	destfile="${web}/examples/${exampleZipped}"
+		<zip destfile="${web}/examples/${exampleZipped}"
 			basedir="${web}/examples/${exampleDir}/"
 			excludes="**/_DS.Store" />
 		
