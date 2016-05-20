@@ -13,13 +13,13 @@ import java.util.ArrayList;
 /**
  *		<h1>SQL library for Processing 2+</h1>
  *
- *		Since v 0.2.0 it has some ORM like features, see 
+ *		Since v 0.2.0 it has some ORM like features, see
  *		<ul>
  *			<li><a href="#setFromRow(java.lang.Object)">setFromRow(Object)</a></li>
  *			<li><a href="#saveToDatabase(java.lang.Object)">saveToDatabase(Object)</a></li>
  *			<li><a href="#insertUpdateInDatabase(java.lang.String, java.lang.String[], java.lang.Object[])">insertUpdateIntoDatabase(String,Object[],Object[])</a></li>
  *		</ul>
- *		
+ *
  *		Links:<ul>
  *		<li>http://www.mysql.com/products/connector/j/</li>
  *		<li>http://java.sun.com/products/jdbc/</li>
@@ -47,19 +47,19 @@ abstract public class SQL
 
 	private int driverMinorVersion = -1;
 	private int driverMajorVersion = -1;
-	
+
 	public java.sql.Connection connection;
 	public String previousQuery;
-	
+
 	public java.sql.Statement statement;
 	public java.sql.ResultSet result;
-	
+
 	private boolean DEBUG = true;
-	private HashMap<ResultSet,String[]> columnNamesCache;
+	//private HashMap<ResultSet,String[]> columnNamesCache;
 	private NameMapper mapper;
 	private HashMap<Class,String> classToTableMap;
 	protected ArrayList<String> tableNames;
-	
+
 	/**
 	 *	Do not use this contructor.
 	 */
@@ -69,10 +69,10 @@ abstract public class SQL
 			"SQL(): Please use this constructor\n"+
 			"\tSQL ( String _serv, String _db, String _u, String _p, PApplet _pa )"
 		);
-		
+
 		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
-	
+
 
 	/**
 	 *	You should not directly use the SQL.class instead use the classes for your database type.
@@ -82,19 +82,19 @@ abstract public class SQL
 		this.user = "";
 		this.pass = "";
 		this.server = "";
-		
+
 		String f = _pa.dataPath(_db);
 		File ff = new File(f);
 		if ( !ff.exists() || !ff.canRead() )
 		{
 			f = _pa.sketchPath( _db );
 			ff = new File(f);
-			
+
 			if ( !ff.exists() || !ff.canRead() )
 			{
 				f = _db;
 				ff = new File(f);
-				
+
 				if ( !ff.exists() || !ff.canRead() )
 				{
 					System.err.println(
@@ -104,19 +104,19 @@ abstract public class SQL
 				}
 			}
 		}
-		
-		_pa.println( "Using this database: " + f );
-		
+
+		PApplet.println( "Using this database: " + f );
+
 		this.database = f;
-	
+
 		this.url = "jdbc:" + type + ":" + database;
-	
+
 		this.papplet = _pa;
-		papplet.registerDispose( this );
+		papplet.registerMethod("dispose", this);
 		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
-	
-	
+
+
 	/**
 	 *	You should not directly use the SQL.class instead use the classes for your database type.
 	 */
@@ -124,17 +124,17 @@ abstract public class SQL
 	{
 		this.server = _serv;
 		this.database = _db;
-		
+
 		this.url = "jdbc:" + type + "://" + server +  "/" + database;
-		
+
 		this.user = _u;
 		this.pass = _p;
-		
+
 		this.papplet = _pa;
-		papplet.registerDispose( this );
+		papplet.registerMethod("dispose", this);
 		mapper = new de.bezier.data.sql.mapper.UnderScoreToCamelCaseMapper();
 	}
-	
+
 
 	/**
 	 *	Turn some debugging on/off.
@@ -145,7 +145,7 @@ abstract public class SQL
 	{
 		DEBUG = yesNo;
 	}
-	
+
 
 	/**
 	 *	Get current debugging setting
@@ -156,7 +156,7 @@ abstract public class SQL
 	{
 		return DEBUG;
 	}
-	
+
 
 	/**
 	 *	Open the database connection with the parameters given in the contructor.
@@ -169,31 +169,31 @@ abstract public class SQL
 			System.out.println( "SQL.connect(): You have to set a driver and type first." );
 			return false;
 		}
-		
+
 		// TODO: need to add mechanisms for different connection types and parameters, see:
 		// http://jdbc.postgresql.org/documentation/83/connect.html
-	
+
 		try
 		{
 			Class.forName(driver);
 			connection = java.sql.DriverManager.getConnection(url, user, pass);
-			
+
 		}
 		catch (ClassNotFoundException e)
 		{
 			System.out.println( "SQL.connect(): Could not find the database driver ( "+driver+" ).\r" );
 			if (DEBUG) e.printStackTrace();
 			return false;
-			
+
 		}
 		catch (java.sql.SQLException e)
 		{
 			System.out.println( "SQL.connect(): Could not connect to the database ( "+url+" ).\r" );
 			if (DEBUG) e.printStackTrace();
 			return false;
-			
+
 		}
-		
+
 		getTableNames();
 
 		try {
@@ -207,7 +207,7 @@ abstract public class SQL
 		} catch ( SQLException sqle ) {
 			sqle.printStackTrace();
 		}
-		
+
 		return true;
 	}
 
@@ -228,12 +228,12 @@ abstract public class SQL
 		}
 		return driver + " " + driverMajorVersion + "." + driverMinorVersion;
 	}
-	
-	private void preQueryOrExecute () 
+
+	private void preQueryOrExecute ()
 	{
 		result = null;
 	}
-	
+
 
 	/**
 	 *	Execute a SQL command on the open database connection.
@@ -243,13 +243,13 @@ abstract public class SQL
 	public void execute ( String _sql )
 	{
 		preQueryOrExecute();
-		
+
 		query( _sql, false );
 	}
 
 
 	/**
-	 *	Execute a SQL command on the open database connection. 
+	 *	Execute a SQL command on the open database connection.
 	 *	Arguments are passed to String.format() first.
 	 *
 	 *	@param	_sql	SQL command as pattern for String.format()
@@ -261,15 +261,15 @@ abstract public class SQL
 	public void execute ( String _sql, Object ... args )
 	{
 		preQueryOrExecute();
-		
+
 		if ( args == null || args.length == 0 ) queryOrExecute( _sql, false );
-		
+
 		Method meth = null;
 		try {
-			meth = String.class.getMethod( 
-				"format", 
-				String.class, 
-				java.lang.reflect.Array.newInstance(Object.class,0).getClass() 
+			meth = String.class.getMethod(
+				"format",
+				String.class,
+				java.lang.reflect.Array.newInstance(Object.class,0).getClass()
 			);
 		} catch ( Exception ex ) {
 			ex.printStackTrace();
@@ -284,11 +284,11 @@ abstract public class SQL
 		} catch ( Exception ex ) {
 			if (DEBUG) ex.printStackTrace();
 		}
-		
+
 		queryOrExecute( sql2, false );
 	}
-	
-	
+
+
 	/**
 	 *	Issue a query on the open database connection
 	 *
@@ -297,7 +297,7 @@ abstract public class SQL
 	public void query ( String _sql )
 	{
 		preQueryOrExecute();
-		
+
 		queryOrExecute( _sql, true );
 	}
 
@@ -315,15 +315,15 @@ abstract public class SQL
 	public void query ( String _sql, Object ... args )
 	{
 		preQueryOrExecute();
-		
+
 		if ( args == null || args.length == 0 ) queryOrExecute( _sql, true );
-		
+
 		Method meth = null;
 		try {
-			meth = String.class.getMethod( 
-				"format", 
-				String.class, 
-				java.lang.reflect.Array.newInstance(Object.class,0).getClass() 
+			meth = String.class.getMethod(
+				"format",
+				String.class,
+				java.lang.reflect.Array.newInstance(Object.class,0).getClass()
 			);
 		} catch ( Exception ex ) {
 			ex.printStackTrace();
@@ -336,10 +336,10 @@ abstract public class SQL
 		} catch ( Exception ex ) {
 			if (DEBUG) ex.printStackTrace();
 		}
-		
+
 		queryOrExecute( sql2, true );
 	}
-	
+
 
 	/**
 	 *	Query implemenbtation called by execute() / query()
@@ -351,16 +351,16 @@ abstract public class SQL
 			System.out.println( "SQL.query(): You need to connect() first." );
 			return;
 		}
-		
+
 		previousQuery = _sql;
-		
+
 		try
 		{
 			if ( statement == null )
 			{
 				statement = connection.createStatement();
 			}
-			
+
 			boolean hasResults = statement.execute( _sql );
 
 			if ( keep && hasResults )
@@ -377,7 +377,7 @@ abstract public class SQL
 			}
 		}
 	}
-	
+
 
 	/**
 	 *	Check if more results (rows) are available. This needs to be called before any results can be retrieved.
@@ -385,13 +385,13 @@ abstract public class SQL
 	 *	@return	boolean	true if more results are available, false otherwise
 	 */
 	public boolean next ()
-	{	
+	{
 		if ( result == null )
 		{
 			System.out.println( "SQL.next(): You need to query() something first." );
 			return false;
 		}
-		
+
 		try
 		{
 			return result.next();
@@ -403,7 +403,7 @@ abstract public class SQL
 		}
 		return false;
 	}
-	
+
 
 	/**
 	 *	Get names of available tables in active database,
@@ -412,7 +412,7 @@ abstract public class SQL
 	 * @return String[] The table names
 	 */
 	abstract public String[] getTableNames ();
-	
+
 
 	/**
 	 *	Returns an array with the column names of the last request.
@@ -422,19 +422,19 @@ abstract public class SQL
 	public String[] getColumnNames ()
 	{
 		String[] colNames = null;
-		
+
 		if ( result == null )
 		{
 			System.out.println( "SQL.getColumnNames(): You need to query() something first." );
 			return null;
 		}
-		
+
 		// if ( columnNamesCache == null )
 		// 	columnNamesCache = new HashMap<ResultSet,String[]>();
-		// 	
+		//
 		// colNames = columnNamesCache.get( result );
 		// if ( colNames != null ) return colNames;
-		
+
 		java.sql.ResultSetMetaData meta = null;
 		try {
 			meta = result.getMetaData();
@@ -442,12 +442,12 @@ abstract public class SQL
 			if (DEBUG) sqle.printStackTrace();
 			return null;
 		}
-		
-		if ( meta != null ) 
+
+		if ( meta != null )
 		{
 			try {
 				colNames = new String[ meta.getColumnCount() ];
-				for ( int i = 1, k = meta.getColumnCount(); i <= k; i++ ) 
+				for ( int i = 1, k = meta.getColumnCount(); i <= k; i++ )
 				{
 					colNames[i-1] = meta.getColumnName( i );
 				}
@@ -456,13 +456,13 @@ abstract public class SQL
 				return null;
 			}
 		}
-		
+
 		// columnNamesCache.clear();
 		// columnNamesCache.put( result, colNames );
-		
+
 		return colNames;
 	}
-	
+
 
 	/**
 	 *	Get connection. ... in case you want to do JDBC stuff directly.
@@ -473,7 +473,7 @@ abstract public class SQL
 	{
 		return connection;
 	}
-	
+
 
 	/**
 	 *	Read an integer value from the specified field.
@@ -488,13 +488,13 @@ abstract public class SQL
 	{
 		// TODO: 0 does not seem to be a good return value for a numeric field to indicate failure
 		// same goes for other numeric fields
-		
+
 		if ( result == null )
 		{
 			System.out.println( "SQL.getInt(): You need to query() something first." );
 			return 0;
 		}
-		
+
 		try
 		{
 			return result.getInt( _field );
@@ -506,7 +506,7 @@ abstract public class SQL
 		}
 		return 0;
 	}
-	
+
 	/**
 	 *	Read an integer value from the specified field.
 	 *	Represents an INT / INTEGER type:
@@ -523,7 +523,7 @@ abstract public class SQL
 			System.out.println( "SQL.getInt(): You need to query() something first." );
 			return 0;
 		}
-		
+
 		try
 		{
 			return result.getInt( _column );
@@ -535,7 +535,7 @@ abstract public class SQL
 		}
 		return 0;
 	}
-	
+
 
 	/**
 	 *	Read a long value from the specified field.
@@ -553,7 +553,7 @@ abstract public class SQL
 			System.out.println( "SQL.getLong(): You need to query() something first." );
 			return 0;
 		}
-		
+
 		try
 		{
 			return result.getLong( _field );
@@ -565,8 +565,8 @@ abstract public class SQL
 		}
 		return 0;
 	}
-	
-	
+
+
 	/**
 	 *	Read a long value from the specified field.
 	 *	Represents a BIGINT type:
@@ -583,7 +583,7 @@ abstract public class SQL
 			System.out.println( "SQL.getLong(): You need to query() something first." );
 			return 0;
 		}
-		
+
 		try
 		{
 			return result.getLong( _column );
@@ -595,7 +595,7 @@ abstract public class SQL
 		}
 		return 0;
 	}
-	
+
 
 	/**
 	 *	Read a float value from the specified field.
@@ -613,7 +613,7 @@ abstract public class SQL
 			System.out.println( "SQL.getFloat(): You need to query() something first." );
 			return 0.0f;
 		}
-		
+
 		try
 		{
 			return result.getFloat( _field );
@@ -643,7 +643,7 @@ abstract public class SQL
 			System.out.println( "SQL.getFloat(): You need to query() something first." );
 			return 0.0f;
 		}
-		
+
 		try
 		{
 			return result.getFloat( _column );
@@ -655,8 +655,8 @@ abstract public class SQL
 		}
 		return 0.0f;
 	}
-	
-	
+
+
 	/**
 	 *	Read a double value from the specified field.
 	 *	Represents FLOAT and DOUBLE types:
@@ -673,7 +673,7 @@ abstract public class SQL
 			System.out.println( "SQL.getDouble(): You need to query() something first." );
 			return 0.0;
 		}
-		
+
 		try
 		{
 			return result.getDouble( _field );
@@ -703,7 +703,7 @@ abstract public class SQL
 			System.out.println( "SQL.getDouble(): You need to query() something first." );
 			return 0.0;
 		}
-		
+
 		try
 		{
 			return result.getDouble( _column );
@@ -715,8 +715,8 @@ abstract public class SQL
 		}
 		return 0.0;
 	}
-	
-	
+
+
 	/**
 	 *	Read a java.math.BigDecimal value from the specified field.
 	 *	Represents DECIMAL and NUMERIC types:
@@ -733,7 +733,7 @@ abstract public class SQL
 			System.out.println( "SQL.getBigDecimal(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getBigDecimal( _field );
@@ -763,7 +763,7 @@ abstract public class SQL
 			System.out.println( "SQL.getBigDecimal(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getBigDecimal( _column );
@@ -775,8 +775,8 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 *	Read a boolean value from the specified field.
 	 *	Represents BIT type:
@@ -793,7 +793,7 @@ abstract public class SQL
 			System.out.println( "SQL.getBoolean(): You need to query() something first." );
 			return false;
 		}
-		
+
 		try
 		{
 			return result.getBoolean( _field );
@@ -805,7 +805,7 @@ abstract public class SQL
 		}
 		return false;
 	}
-	
+
 
 	/**
 	 *	Read a boolean value from the specified field.
@@ -823,7 +823,7 @@ abstract public class SQL
 			System.out.println( "SQL.getBoolean(): You need to query() something first." );
 			return false;
 		}
-		
+
 		try
 		{
 			return result.getBoolean( _column );
@@ -835,8 +835,8 @@ abstract public class SQL
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 *	Read a String value from the specified field.
 	 *	Represents VARCHAR and CHAR types:
@@ -853,7 +853,7 @@ abstract public class SQL
 			System.out.println( "SQL.getString(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getString( _field );
@@ -882,7 +882,7 @@ abstract public class SQL
 			System.out.println( "SQL.getString(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getString( _column );
@@ -894,7 +894,7 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
 	/**
 	 *	Read a java.sql.Date value from the specified field.
 	 *	Represents DATE type:
@@ -911,7 +911,7 @@ abstract public class SQL
 			System.out.println( "SQL.getDate(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getDate( _field );
@@ -923,7 +923,7 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 *	Read a java.sql.Date value from the specified field.
@@ -941,7 +941,7 @@ abstract public class SQL
 			System.out.println( "SQL.getDate(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getDate( _column );
@@ -953,8 +953,8 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 *	Read a java.sql.Time value from the specified field.
 	 *	Represents TIME type:
@@ -971,7 +971,7 @@ abstract public class SQL
 			System.out.println( "SQL.getTime(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getTime( _field );
@@ -983,7 +983,7 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 *	Read a java.sql.Time value from the specified field.
@@ -1001,7 +1001,7 @@ abstract public class SQL
 			System.out.println( "SQL.getTime(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getTime( _column );
@@ -1013,8 +1013,8 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 *	Read a java.sql.Timestamp value from the specified field.
 	 *	Represents TIMESTAMP type:
@@ -1031,7 +1031,7 @@ abstract public class SQL
 			System.out.println( "SQL.getTimestamp(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getTimestamp( _field );
@@ -1043,7 +1043,7 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 *	Read a java.sql.Timestamp value from the specified field.
@@ -1061,7 +1061,7 @@ abstract public class SQL
 			System.out.println( "SQL.getTimestamp(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getTimestamp( _column );
@@ -1073,8 +1073,8 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 *	Read a value from the specified field to have it returned as an byte[]
 	 *
@@ -1088,7 +1088,7 @@ abstract public class SQL
 			System.out.println( "SQL.getBlob(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			Blob blob = result.getBlob( _field );
@@ -1101,8 +1101,8 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 *	Read a value from the specified field to have it returned as an byte[]
 	 *
@@ -1116,7 +1116,7 @@ abstract public class SQL
 			System.out.println( "SQL.getBlob(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			Blob blob = result.getBlob( _column );
@@ -1129,8 +1129,8 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 *	Read a value from the specified field to have it returned as an object.
 	 *
@@ -1144,7 +1144,7 @@ abstract public class SQL
 			System.out.println( "SQL.getObject(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getObject( _field );
@@ -1156,7 +1156,7 @@ abstract public class SQL
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 *	Read a value from the specified field to have it returned as an object.
@@ -1171,7 +1171,7 @@ abstract public class SQL
 			System.out.println( "SQL.getObject(): You need to query() something first." );
 			return null;
 		}
-		
+
 		try
 		{
 			return result.getObject( _column );
@@ -1192,8 +1192,8 @@ abstract public class SQL
 	{
 		dispose();
 	}
-	
-	
+
+
 	/**
 	 *	Callback function for PApplet.registerDispose()
 	 *
@@ -1208,10 +1208,10 @@ abstract public class SQL
 				result.close();
 			}
 			catch ( java.sql.SQLException e ) { ; }
-			
+
 			result = null;
 		}
-		
+
 		if ( statement != null )
 		{
 			try
@@ -1219,10 +1219,10 @@ abstract public class SQL
 				statement.close();
 			}
 			catch ( java.sql.SQLException e ) { ; }
-			
+
 			statement = null;
 		}
-		
+
 		if ( connection != null )
 		{
 			try
@@ -1230,11 +1230,11 @@ abstract public class SQL
 				connection.close();
 			}
 			catch ( java.sql.SQLException e ) { ; }
-			
+
 			connection = null;
 		}
 	}
-	
+
 
 	/**
 	 *	Generate an escaped String for a given Object
@@ -1246,7 +1246,7 @@ abstract public class SQL
 	{
 		return "\"" + o.toString().replaceAll("\"","\\\"") + "\"";
 	}
-	
+
 
 	/**
 	 *	Set the current NameMapper
@@ -1258,7 +1258,7 @@ abstract public class SQL
 	{
 		this.mapper = mapper;
 	}
-	
+
 
 	/**
 	 *	Get the current NameMapper
@@ -1269,13 +1269,13 @@ abstract public class SQL
 	{
 		return mapper;
 	}
-	
+
 
 	/**
 	 *	<p>Highly experimental ...<br />
-	 *	tries to map column names to public fields or setter methods 
+	 *	tries to map column names to public fields or setter methods
 	 *	in the given object.</p>
-	 *	
+	 *
 	 *	<p>Use like so:
 	 *  <pre>
 	 *	db.query("SELECT name, id, sometime FROM table");
@@ -1283,11 +1283,11 @@ abstract public class SQL
 	 *	while ( db.next() ) {
 	 *		SomeObject obj = new SomeObject();
 	 *		db.setFromRow(obj);
-	 *		// obj.name is now same as db.getString("name"), etc. 
+	 *		// obj.name is now same as db.getString("name"), etc.
 	 *  }
 	 *  </pre></p>
 	 *
-	 *	<p>SomeObject might look like: 
+	 *	<p>SomeObject might look like:
 	 *	<pre>
 	 *	class SomeObject {
 	 *		public String name;
@@ -1304,23 +1304,23 @@ abstract public class SQL
 			System.err.println( "SQL.rowToObject(): Handing in null won't cut it." );
 			return;
 		}
-		
+
 		if ( result == null ) {
 			System.err.println( "SQL.rowToObject(): You need to query() something first!" );
 			return;
 		}
-		
+
 		String[] colNames = getColumnNames();
 		if ( colNames == null )
 		{
-			System.err.println( 
+			System.err.println(
 				"SQL.rowToObject(): uh-oh something went wrong: unable to get column names." );
 			return;
 		}
-		
-		if ( colNames.length > 0 ) 
+
+		if ( colNames.length > 0 )
 		{
-			Class klass = null;
+			Class<?> klass = null;
 			try {
 				klass = Class.forName("DeBezierDataSQL");
 			} catch ( Exception e ) {
@@ -1348,7 +1348,7 @@ abstract public class SQL
 			}
 		}
 	}
-	
+
 
 	/**
 	 *	Convert a field name to a setter name: fieldName -> setFieldName().
@@ -1370,7 +1370,7 @@ abstract public class SQL
 		if ( name.length() == 0 ) return null;
 		return "get" + name.substring(0,1).toUpperCase() + name.substring(1);
 	}
-	
+
 
 	/**
 	 *	Set a table name for a class.
@@ -1378,22 +1378,22 @@ abstract public class SQL
 	public void registerTableNameForClass ( String name, Object classOrObject )
 	{
 		if ( name == null || name.equals("") || classOrObject == null ) return;
-		
+
 		Class klass = null;
 		if ( classOrObject.getClass() != Class.class )
 			klass = classOrObject.getClass();
 		else
 			klass = (Class)classOrObject;
-			
+
 		if ( classToTableMap == null )
 			classToTableMap = new HashMap<Class,String>();
-		
+
 		classToTableMap.put( klass, name );
 		if (DEBUG) System.out.println( String.format(
 			"Class \"%s\" is now mapped to table \"%s\"", klass.getName(), name
 		));
 	}
-	
+
 
 	/**
 	 *	Take an object, try to find table name from object name (or look it up),
@@ -1407,23 +1407,23 @@ abstract public class SQL
 	public void saveToDatabase ( Object object )
 	{
 		if ( object == null ) return;
-		
+
 		// Find the table name
-		
+
 		String tableName = null;
-		
+
 		if ( classToTableMap == null )
 			classToTableMap = new HashMap<Class,String>();
-		
-		tableName = classToTableMap.get(object.getClass()); 
-		
+
+		tableName = classToTableMap.get(object.getClass());
+
 		if ( tableName != null )
 			saveToDatabase( tableName, object );
 		else
 		{
 			Class klass = object.getClass();
 			tableName = klass.getName();
-			
+
 			for ( char c : new char[]{'$','.'} )
 			{
 				int indx = tableName.lastIndexOf(c);
@@ -1431,22 +1431,22 @@ abstract public class SQL
 					tableName = tableName.substring(indx+1);
 				}
 			}
-			
+
 			if ( mapper != null ) {
 				tableName = mapper.backward(tableName);
 			}
-			
+
 			registerTableNameForClass( tableName, klass );
-			
+
 			saveToDatabase( tableName, object );
 		}
 	}
-	
+
 
 	/**
 	 *	Takes a table name and an object and tries to construct a set of
 	 *	columns names from fields and getters found in the object. After
-	 *	the values are fetched from the object all is passed to 
+	 *	the values are fetched from the object all is passed to
 	 *	insertUpdateIntoDatabase().
 	 *
 	 * @param tableName String The name of the table
@@ -1457,7 +1457,7 @@ abstract public class SQL
 	public void saveToDatabase ( String tableName, Object object )
 	{
 		if ( object == null ) return;
-		
+
 		String[] tableNames = getTableNames();
 		if ( !java.util.Arrays.asList(tableNames).contains(tableName) ) {
 			System.err.println(String.format(
@@ -1465,29 +1465,29 @@ abstract public class SQL
 			));
 			return;
 		}
-		
+
 		String[] colNames = getColumnNames();
 		String[] fieldNames = new String[colNames.length];
 
-		if ( mapper != null ) 
+		if ( mapper != null )
 		{
-			for ( int i = 0; i < colNames.length; i++ ) 
+			for ( int i = 0; i < colNames.length; i++ )
 			{
 				//System.out.println(colNames[i]);
 				fieldNames[i] = mapper.forward(colNames[i]);
 				//System.out.println(fieldNames[i]);
 			}
 		}
-		
-		Class klass = object.getClass();
+
+		Class<? extends Object> klass = object.getClass();
 		Field[] fields = new Field[colNames.length];
 		Method[] getters = new Method[colNames.length];
-		
+
 		for ( int i = 0; i < colNames.length; i++ )
 		{
 			String fieldName = fieldNames[i];
 			String colName = colNames[i];
-			
+
 			Field f = null;
 			try {
 				f = klass.getField(fieldName);
@@ -1508,7 +1508,7 @@ abstract public class SQL
 			else
 			{
 				if (DEBUG) System.out.println( "Field not found, trying setter method" );
-				
+
 				String getterName = nameToGetter(fieldName);
 				Method getter = null;
 				try {
@@ -1532,16 +1532,16 @@ abstract public class SQL
 				return;
 			}
 		}
-		
+
 		Object[] values = null;
-		
-		Class clazz = null;
+
+		Class<?> clazz = null;
 		try {
 			clazz = Class.forName("DeBezierDataSQL");
 		} catch ( Exception e ) {
 			if (DEBUG) e.printStackTrace();
 		}
-		
+
 		if ( klass != null ) {
 			Method meth = null;
 			try {
@@ -1562,8 +1562,8 @@ abstract public class SQL
 				}
 			}
 		}
-		
-		if ( values != null ) 
+
+		if ( values != null )
 		{
 			insertUpdateInDatabase( tableName, colNames, values );
 		}
@@ -1572,10 +1572,10 @@ abstract public class SQL
 			System.err.println("saveToDatabase() : trouble, trouble!!");
 		}
 	}
-	
+
 
 	/**
-	 *	Insert or update a bunch of values in the database. If the given table has a 
+	 *	Insert or update a bunch of values in the database. If the given table has a
 	 *	primary key the entry will be updated if it already existed.
 	 *
 	 *	@param tableName String The name of the table
@@ -1589,41 +1589,41 @@ abstract public class SQL
 		{
 			valuesKeys.put(columnNames[i], values[i]);
 		}
-		
+
 		HashMap<String, Object> primaryKeys = null;
 		try {
 			DatabaseMetaData meta = connection.getMetaData();
 			ResultSet rs = meta.getPrimaryKeys(null, null, tableName);
-			
+
 		    while ( rs.next() )
 			{
 				if ( primaryKeys == null )
 			    	primaryKeys = new HashMap<String, Object>();
-		    	
+
 				String columnName = rs.getString("COLUMN_NAME");
 		    	primaryKeys.put(columnName, valuesKeys.get(columnName));
 				valuesKeys.remove(columnName);
 		    }
-			
+
 		} catch ( SQLException sqle ) {
 			sqle.printStackTrace();
 		}
-		
+
 		//System.out.println(valuesKeys);
 		//System.out.println(primaryKeys);
-		
+
 		String cols = "";
 		String patt = "";
 		HashMap<Object, Integer> valueIndices = new HashMap<Object, Integer>();
 		int i = 1;
-		for ( Map.Entry e : valuesKeys.entrySet() ) 
+		for ( Map.Entry e : valuesKeys.entrySet() )
 		{
 			cols += ( i > 1 ? " , " : "" ) + e.getKey();
 			patt += ( i > 1 ? " , " : "" ) + "?";
 			valueIndices.put( e.getKey(), i );
 			i++;
 		}
-		
+
 		String sql = null, opts = null;
 		HashMap<Object, Integer> primaryIndices = null;
 		if ( primaryKeys == null || primaryKeys.size() == 0 ) {
@@ -1676,25 +1676,25 @@ abstract public class SQL
 				sqle.printStackTrace();
 			}
 		}
-		
+
 		if (DEBUG) System.out.println( sql );
-		
+
 		try {
 			PreparedStatement ps = connection.prepareStatement( sql );
-			
+
 			for ( Map.Entry e : valuesKeys.entrySet() )
 			{
 				ps.setString( valueIndices.get(e.getKey()), e.getValue()+"" );
 			}
-			
-			if ( primaryKeys != null ) 
+
+			if ( primaryKeys != null )
 			{
 				for ( Map.Entry e : primaryKeys.entrySet() )
 				{
 					ps.setString( valueIndices.size()+primaryIndices.get(e.getKey()), e.getValue()+"" );
 				}
 			}
-			
+
 			ps.executeUpdate();
 			ps.close();
 		} catch ( java.sql.SQLException sqle ) {
