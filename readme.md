@@ -5,8 +5,8 @@ you access MySQL, SQLite and PostgreSQL databases
     
 --------------------------------------------------------------------------------
 
-~Latest release (same that is in Processing's library manager):
-https://raw.github.com/fjenett/sql-library-processing/latest/release/BezierSQLib.zip~
+~~Latest release (same that is in Processing's library manager):
+https://raw.github.com/fjenett/sql-library-processing/latest/release/BezierSQLib.zip~~
 Modified slightly for Processing 3. Install manually by unzipping this folder into your libraries folder:
 https://github.com/benfry/sql-library-processing/raw/master/release/BezierSQLib.zip
 
