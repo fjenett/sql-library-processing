@@ -4,5 +4,5 @@ url = https://github.com/fjenett/sql-library-processing
 category = DATA
 sentence = A library to facilitate communication with SQL-based databases
 paragraph =  SQLibrary is an interface to MySQL, SQLite and PostgreSQL databases
-version = 1160
-prettyVersion = 0.2.1
+version = 1162
+prettyVersion = 0.3
