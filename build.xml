@@ -20,9 +20,6 @@ ${line.separator}with the path to where you have the code for Processing checked
 ${line.separator}libraries.dir=/path/to/sketchbook/libraries
 ${line.separator}with the full path to the 'libraries' folder inside your sketchbook." />
 
-	<!-- Change to point to your user libraries folder inside your sketchbook -->
-	<property name="processing" location="/Users/fjenett/Documents/Processing/libraries"/>
-
 	<!-- No changes or adjustments required below -->
 
 	<property name="author" 		value="Florian Jenett"/>
