@@ -1,9 +1,9 @@
 This library wraps around JDBC drivers to let you access MySQL, SQLite and PostgreSQL databases.
 
-## Latest Release
+## Latest Release (0.3.2)
 
 This fork has been modified slightly for Processing 3. It's now available in the Contribution Manager in the PDE, or you can install manually by unzipping this folder into your libraries folder:
-https://github.com/benfry/sql-library-processing/raw/master/release/BezierSQLib.zip
+https://github.com/fjenett/sql-library-processing/raw/latest/release/BezierSQLib.zip
 
 ## Features
 
