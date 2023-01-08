@@ -47,7 +47,7 @@ extends de.bezier.data.sql.SQL
 	
 	private void init ()
 	{
-		this.driver = "com.mysql.jdbc.Driver";
+		this.driver = "com.mysql.cj.jdbc.Driver";
 		this.type = "mysql";
 		
 		this.url = "jdbc:" + type + "://" + server +  "/" + database;
