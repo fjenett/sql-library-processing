@@ -15,10 +15,10 @@ import java.util.ArrayList;
  *
  *
  *		@author 		Florian Jenett - mail@florianjenett.de
- *
+ *		@modifyer       	Gil Park       - sendtogil@gilpark.com
  *		created:		07.05.2005 - 12:46 Uhr
  *		modified:		2012-02
- *
+ *		
  */
 
 public class MySQL
@@ -49,8 +49,8 @@ extends de.bezier.data.sql.SQL
 	{
 		this.driver = "com.mysql.cj.jdbc.Driver";
 		this.type = "mysql";
-		
-		this.url = "jdbc:" + type + "://" + server +  "/" + database;
+		//UTF8 Encoding
+		this.url = "jdbc:" + type + "://" + server +  "/" + database + "?useUnicode=yes&characterEncoding=UTF-8";
 	}
 	
 	public String[] getTableNames ()
