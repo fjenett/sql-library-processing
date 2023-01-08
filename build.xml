@@ -14,9 +14,11 @@
     	<available file="local.properties" />
   	</condition>
 
-    <fail unless="processing.dir" message="To make the build work, create a file named local.properties, with the following:
+    <fail unless="processing.dir"
+		  message="To make the build work, create a file named local.properties, with the following:
 ${line.separator}processing.dir=/path/to/processing-git
-${line.separator}with the path to where you have the code for Processing checked out. ${line.separator}(This script will look for the 'core' directory inside that folder.)
+${line.separator}with the path to where you have the code for Processing checked out.
+${line.separator}(This script will look for the 'core' directory inside that folder.)
 ${line.separator}libraries.dir=/path/to/sketchbook/libraries
 ${line.separator}with the full path to the 'libraries' folder inside your sketchbook." />
 
