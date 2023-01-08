@@ -67,7 +67,7 @@ extends de.bezier.data.sql.SQL
 		if ( tableNames == null )
 		{
 			tableNames = new ArrayList<String>();
-	        query( "SELECT relname AS 'table_name' FROM pg_stat_user_tables WHERE schemaname='public'" );
+	        query( "SELECT relname AS table_name FROM pg_stat_user_tables WHERE schemaname='public'" );
 			while ( next() ) {
 				tableNames.add( getObject("table_name").toString() );
 			}

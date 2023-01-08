@@ -1,14 +1,14 @@
---------------------------------------------------------------------------------
+Florian Jenett's library that wraps around JDBC drivers to let you access MySQL, SQLite and PostgreSQL databases. [Link to original project](https://github.com/fjenett/sql-library-processing)
 
-SQLibrary, a Processing library that wraps around JDBC drivers to let
-you access MySQL, SQLite and PostgreSQL databases
-    
---------------------------------------------------------------------------------
+## Latest Release
 
-Latest release (same that is in Processing's library manager):
-https://raw.github.com/fjenett/sql-library-processing/latest/release/BezierSQLib.zip
-    
---------------------------------------------------------------------------------
+~~Latest release (same that is in Processing's library manager):
+https://raw.github.com/fjenett/sql-library-processing/latest/release/BezierSQLib.zip~~
+
+This fork has been modified slightly for Processing 3. It's now available in the Contribution Manager in the PDE, or you can install manually by unzipping this folder into your libraries folder:
+https://github.com/benfry/sql-library-processing/raw/master/release/BezierSQLib.zip
+
+## Features
 
 It's not an ORM (and will not become one) but it has some handy features
 since v0.2.0 that makes it easier to load and save objects to a database.
@@ -20,10 +20,9 @@ since v0.2.0 that makes it easier to load and save objects to a database.
 See:
 https://raw.github.com/fjenett/sql-library-processing/master/src/de/bezier/data/sql/SQL.java
 
---------------------------------------------------------------------------------
+## Database Drivers
 
-Parts of this library are available under their own licenses. These are
-redistributed as downloaded from the original sources:
+Parts of this library are available under their own licenses. These are redistributed as downloaded from the original sources:
 
 MySQL Connector/J (JDBC driver)
 mysql-connector-java-3.1.8-bin.jar
@@ -41,9 +40,3 @@ SQLite JDBC driver
 sqlite-jdbc-3.7.2.jar
 http://code.google.com/p/sqlite-jdbc/
 Apache License 2.0, http://www.apache.org/licenses/LICENSE-2.0
-    
---------------------------------------------------------------------------------
-
-https://github.com/fjenett/sql-library-processing
-
---------------------------------------------------------------------------------

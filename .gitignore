@@ -1,8 +1,11 @@
-# Mac fun
 .DS_Store
+*~
+
+local.properties
+/BezierSQLib
 
 # ant-javac build directory
-bin/
+/bin/
 
 # hide some results
 documentation/*
