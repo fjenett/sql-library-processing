@@ -27,9 +27,9 @@ ${line.separator}with the full path to the 'libraries' folder inside your sketch
 	<property name="author" 		value="Florian Jenett"/>
 	<property name="copyright" 		value="(c) 2005 - 2023"/>
 	<property name="libraryName"  	value="BezierSQLib"/>
-	<property name="versionNumber"  value="0.3.2"/>
+	<property name="versionNumber"  value="0.3.3"/>
 	<property name="yourLink"  		value="http://bezier.de/" />
-	<property name="keywords" 		value="MySQL, SQLite, PostgreSQL, SQL, database"/>
+	<property name="keywords" 		value="MySQL, SQLite, PostgreSQL, DuckDB, SQL, database"/>
 	<property name="javaVersion" 	value="1.8"/>
 
 	<buildnumber file="resources/build.number" />
@@ -39,6 +39,7 @@ ${line.separator}with the full path to the 'libraries' folder inside your sketch
 			<include name="mysql-connector-j-8.0.31.jar"/> <!-- MySQL -->
 			<include name="sqlite-jdbc-3.7.2.jar"/> <!-- SQLite -->
 			<include name="postgresql-9.2-1002.jdbc3.jar"/> <!-- PostgreSQL -->
+			<include name="duckdb_jdbc-0.7.1.jar"/> <!-- DuckDB -->
 		</fileset>
 	</path>
 
